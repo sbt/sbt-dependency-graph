@@ -4,7 +4,7 @@ name := "sbt-dependency-graph"
 
 organization := "net.virtual-void"
 
-version := "0.6.0"
+version := "0.6.1-SNAPSHOT"
 
 homepage := Some(url("http://github.com/jrudolph/sbt-dependency-graph"))
 
@@ -16,3 +16,5 @@ licenses in GlobalScope += "Apache License 2.0" -> url("https://github.com/jrudo
 
 (description in LsKeys.lsync) :=
   "An sbt plugin to visualize dependencies of your build."
+
+libraryDependencies += "com.github.mdr" %% "ascii-graphs" % "0.0.2"
