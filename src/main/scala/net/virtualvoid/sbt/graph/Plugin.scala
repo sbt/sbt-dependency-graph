@@ -28,6 +28,14 @@ object Plugin extends sbt.Plugin {
     "The location the graphml file should be generated at")
   val dependencyGraphML = TaskKey[File]("dependency-graph-ml",
     "Creates a graphml file containing the dependency-graph for a project")
+  val dependencyDotFile = SettingKey[File]("dependency-dot-file",
+    "The location the dot file should be generated at")
+  val dependencyDotNodeLabel = SettingKey[(String,String,String) => String]("dependency-dot-node-label",
+    "Returns a formated string of a dependency. Takes organisation, name and version as parameters")
+  val dependencyDotHead = SettingKey[String]("dependency-dot-head",
+    "The head of the dot file. (e.g. to set your preferred node shapes)")
+  val dependencyDot = TaskKey[File]("dependency-dot",
+    "Creates a dot file containing the dpendency-graph for a project")
   val moduleGraph = TaskKey[IvyGraphMLDependencies.ModuleGraph]("module-graph",
     "The dependency graph for a project")
   val asciiGraph = TaskKey[String]("dependency-graph-string",
@@ -104,6 +112,19 @@ object Plugin extends sbt.Plugin {
     dependencyTree <<= print(asciiTree),
     dependencyGraphMLFile <<= target / "dependencies-%s.graphml".format(config.toString),
     dependencyGraphML <<= dependencyGraphMLTask,
+    dependencyDotFile <<= target / "dependencies-%s.dot".format(config.toString),
+    dependencyDot <<= dependencyDotTask,
+    dependencyDotHead := """digraph "dependency-graph" {
+          |    graph[rankdir="LR"]
+          |    node [
+          |        shape="record"
+          |    ]
+          |    edge [
+          |        arrowtail="none"
+          |    ]""".stripMargin,
+    dependencyDotNodeLabel := { (organisation : String, name : String, version : String) =>
+         """<%s<BR/><B>%s</B><BR/>%s>""".format(organisation, name, version)
+    },
     whatDependsOn <<= InputTask(artifactIdParser) { module =>
       (module, streams, moduleGraph) map { (module, streams, graph) =>
         streams.log.info(IvyGraphMLDependencies.asciiTree(IvyGraphMLDependencies.reverseGraphStartingAt(graph, module)))
@@ -121,7 +142,13 @@ object Plugin extends sbt.Plugin {
       streams.log.info("Wrote dependency graph to '%s'" format resultFile)
       resultFile
     }
-
+  def dependencyDotTask =
+    (moduleGraph, dependencyDotHead, dependencyDotNodeLabel, dependencyDotFile, streams).
+    map { (graph, dotHead, nodeLabelFormation, outFile, streams) =>
+      val resultFile = IvyGraphMLDependencies.saveAsDot(graph, dotHead, nodeLabelFormation, outFile)
+      streams.log.info("Wrote dependency graph to '%s'" format resultFile)
+      resultFile
+    }
   def absoluteReportPath = (file: File) => file.getAbsolutePath
 
   def print(key: TaskKey[String]) =
@@ -177,7 +204,7 @@ object Plugin extends sbt.Plugin {
 
   val VersionPattern = """(\d+)\.(\d+)\.(\d+)(?:-(.*))?""".r
   object Version {
-    def unapplySeq(str: String): Option[(Int, Int, Int, Seq[String])] = str match {
+    def unapply(str: String): Option[(Int, Int, Int, Seq[String])] = str match {
       case VersionPattern(major, minor, fix, appendix) => Some((major.toInt, minor.toInt, fix.toInt, Option(appendix).toSeq))
       case _ => None
     }
