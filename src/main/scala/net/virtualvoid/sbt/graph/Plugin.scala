@@ -66,15 +66,17 @@ object Plugin extends sbt.Plugin {
 
   def graphSettings = seq(
     ivyReportFunction <<= (sbtVersion, target, projectID, ivyModule, appConfiguration, streams) map { (sbtV, target, projectID, ivyModule, config, streams) =>
-      sbtV match {
-        case Version(0, min, fix, _) if min > 12 || (min == 12 && fix >= 1) =>
-          ivyModule.withModule(streams.log) { (i, moduleDesc, _) =>
-            val id = ResolveOptions.getDefaultResolveId(moduleDesc)
-            (c: String) => file("%s/resolution-cache/reports/%s/%s-resolved.xml" format (target, id,c))
-          }
-        case _ =>
-          val home = config.provider.scalaProvider.launcher.ivyHome
-          (c: String) => file("%s/cache/%s-%s-%s.xml" format (home, projectID.organization, crossName(ivyModule), c))
+      ivyModule.withModule(streams.log) { (i, moduleDesc, _) =>
+        val id = ResolveOptions.getDefaultResolveId(moduleDesc)
+        val home = config.provider.scalaProvider.launcher.ivyHome
+        (c: String) => {
+          val candidates = IndexedSeq(
+            file("%s/resolution-cache/reports/%s/%s-resolved.xml" format(target, id, c)),
+            file("%s/resolution-cache/reports/%s-%s-%s.xml".format(target, projectID.organization, crossName(ivyModule), c)),
+            file("%s/cache/%s-%s-%s.xml" format(home, projectID.organization, crossName(ivyModule), c)))
+          candidates.filter(_.exists).sortBy(_.lastModified()).reverse.headOption.getOrElse(
+            sys.error("Could not find an ivy file from any of: %s".format(candidates.mkString(", "))))
+        }
       }
     },
     Compat.ignoreMissingUpdateT,
