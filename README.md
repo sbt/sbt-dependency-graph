@@ -36,8 +36,10 @@ Tasks
  * `what-depends-on <organization> <module> <revision>`: Find out what depends on an artifact. Shows a reverse dependency
    tree for the selected module.
  * `dependency-license-info`: show dependencies grouped by declared license
- * `ivy-report`: let's ivy generate the resolution report for you project. Use
+ * `ivy-report`: lets ivy generate the resolution report for you project. Use
    `show ivy-report` for the filename of the generated report
+ * `dependency-csv`: Shows a CSV-formatted report of dependencies used in this project.
+ * `dependency-csv-to-file`: Writes the same CSV-formatted report to the configured file.
 
 All tasks can be scoped to a configuration to get the report for a specific configuration. `test:dependency-graph`,
 for example, prints the dependencies in the `test` configuration. If you don't specify any configuration, `compile` is
@@ -55,6 +57,9 @@ Configuration settings
  * `dependencyDotHeader`: a setting to customize the header of the dot file (e.g. to set your preferred node shapes).
  * `dependencyDotNodeLabel`: defines the format of a node label
    (default set to `[organisation]<BR/><B>[name]</B><BR/>[version]`)
+ * `dependencyCsv3rdOnly`: a setting which when set to true (the default) excludes same-party dependencies from the report.
+   This is determined by comparing this project's `organization` setting to the same for the given dependency.
+ * `dependencyCsvFile`: a setting which allows configuring the output path of `dependency-csv-to-file`.
 
 E.g. in `build.sbt` you can change configuration settings like this:
 
