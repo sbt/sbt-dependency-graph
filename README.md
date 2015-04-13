@@ -38,7 +38,7 @@ Tasks
  * `dependency-license-info`: show dependencies grouped by declared license
  * `ivy-report`: lets ivy generate the resolution report for you project. Use
    `show ivy-report` for the filename of the generated report
- * `dependency-csv`: Shows a CSV-formatted report of dependencies used in this project.
+ * `dependency-csv`: Shows a CSV-formatted report of dependencies used in this project suitable for review by your company's legal department.
  * `dependency-csv-to-file`: Writes the same CSV-formatted report to the configured file.
 
 All tasks can be scoped to a configuration to get the report for a specific configuration. `test:dependency-graph`,
