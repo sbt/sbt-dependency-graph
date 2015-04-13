@@ -52,8 +52,11 @@ object Plugin extends sbt.Plugin {
     "A task which returns the location of the ivy report file for a given configuration (default `compile`).")
   val ignoreMissingUpdate = update in ivyReport
   val filterScalaLibrary = SettingKey[Boolean]("filter-scala-library",
-    "Specifies if scala dependency should be filtered in dependency-* output"
-  )
+    "Specifies if scala dependency should be filtered in dependency-* output")
+  val asciiCsv = TaskKey[String]("dependency-csv-string",
+    "Returns a string containing the CSV-formatted report of all dependencies including transitives.")
+  val dependencyCsv = TaskKey[Unit]("dependency-csv",
+    "Prints the CSV-formatted report of all dependencies to the console.")
 
   val licenseInfo = TaskKey[Unit]("dependency-license-info",
     "Aggregates and shows information about the licenses of dependencies")
@@ -128,6 +131,8 @@ object Plugin extends sbt.Plugin {
     dependencyDotNodeLabel := { (organisation: String, name: String, version: String) =>
          """<%s<BR/><B>%s</B><BR/>%s>""".format(organisation, name, version)
     },
+    asciiCsv <<= moduleGraph.map(Csv.toCsv),
+    dependencyCsv <<= print(asciiCsv),
     whatDependsOn <<= InputTask(artifactIdParser) { module =>
       (module, streams, moduleGraph) map { (module, streams, graph) =>
         streams.log.info(IvyGraphMLDependencies.asciiTree(IvyGraphMLDependencies.reverseGraphStartingAt(graph, module)))
