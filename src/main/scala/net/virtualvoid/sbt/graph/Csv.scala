@@ -1,9 +1,12 @@
 package net.virtualvoid.sbt.graph
 
 object Csv {
-  def toCsv(graph: IvyGraphMLDependencies.ModuleGraph):String = {
+  def toCsv(graph: IvyGraphMLDependencies.ModuleGraph, excludeOrg:Option[String]):String = {
     graph.modules.toList.sortBy { case (id, module) =>
         (id.organisation, id.name)
+      }
+      .filterNot { case (id, module) =>
+        Some(id.organisation) == excludeOrg
       }
       .filter { case (id, module) =>
         module.evictedByVersion.isEmpty

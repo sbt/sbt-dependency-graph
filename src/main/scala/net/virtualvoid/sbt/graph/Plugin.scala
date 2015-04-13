@@ -57,6 +57,8 @@ object Plugin extends sbt.Plugin {
     "Returns a string containing the CSV-formatted report of all dependencies including transitives.")
   val dependencyCsv = TaskKey[Unit]("dependency-csv",
     "Prints the CSV-formatted report of all dependencies to the console.")
+  val dependencyCsv3rdOnly = SettingKey[Boolean]("dependency-csv-3rd-only",
+    "Set to true to only include 3rd-party dependencies in the CSV report, based on the configured 'organization' SettingKey. (default: true)")
   val dependencyCsvFile = SettingKey[File]("dependency-csv-file",
     "The location the CSV file should be generated at.")
   val dependencyCsvToFile = TaskKey[File]("dependency-csv-to-file",
@@ -135,8 +137,9 @@ object Plugin extends sbt.Plugin {
     dependencyDotNodeLabel := { (organisation: String, name: String, version: String) =>
          """<%s<BR/><B>%s</B><BR/>%s>""".format(organisation, name, version)
     },
-    asciiCsv <<= moduleGraph.map(Csv.toCsv),
+    asciiCsv <<= asciiCsvTask,
     dependencyCsv <<= print(asciiCsv),
+    dependencyCsv3rdOnly := true,
     dependencyCsvFile <<= target / "dependencies-%s.csv".format(config.toString),
     dependencyCsvToFile <<= dependencyCsvToFileTask,
     whatDependsOn <<= InputTask(artifactIdParser) { module =>
@@ -163,6 +166,11 @@ object Plugin extends sbt.Plugin {
       val resultFile = IvyGraphMLDependencies.saveAsDot(graph, dotHead, nodeLabel, outFile)
       streams.log.info("Wrote dependency graph to '%s'" format resultFile)
       resultFile
+    }
+  def asciiCsvTask =
+    (moduleGraph, organization, dependencyCsv3rdOnly).map { (graph, org, thirdOnly) =>
+      val thirdOption = if(thirdOnly) Some(org) else None
+      Csv.toCsv(graph, thirdOption)
     }
   def dependencyCsvToFileTask =
     (asciiCsv, dependencyCsvFile, streams) map { (csv, resultFile, streams) =>
