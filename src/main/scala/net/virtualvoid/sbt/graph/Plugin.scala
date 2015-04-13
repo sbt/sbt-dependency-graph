@@ -35,7 +35,7 @@ object Plugin extends sbt.Plugin {
   val dependencyDotHeader = SettingKey[String]("dependency-dot-header",
     "The header of the dot file. (e.g. to set your preferred node shapes)")
   val dependencyDot = TaskKey[File]("dependency-dot",
-    "Creates a dot file containing the dpendency-graph for a project")
+    "Creates a dot file containing the dependency-graph for a project")
   val moduleGraph = TaskKey[IvyGraphMLDependencies.ModuleGraph]("module-graph",
     "The dependency graph for a project")
   val asciiGraph = TaskKey[String]("dependency-graph-string",
@@ -57,6 +57,10 @@ object Plugin extends sbt.Plugin {
     "Returns a string containing the CSV-formatted report of all dependencies including transitives.")
   val dependencyCsv = TaskKey[Unit]("dependency-csv",
     "Prints the CSV-formatted report of all dependencies to the console.")
+  val dependencyCsvFile = SettingKey[File]("dependency-csv-file",
+    "The location the CSV file should be generated at.")
+  val dependencyCsvToFile = TaskKey[File]("dependency-csv-to-file",
+    "Creates a CSV file containing the dependency report at the location configured in dependency-csv-file SettingKey.")
 
   val licenseInfo = TaskKey[Unit]("dependency-license-info",
     "Aggregates and shows information about the licenses of dependencies")
@@ -133,6 +137,8 @@ object Plugin extends sbt.Plugin {
     },
     asciiCsv <<= moduleGraph.map(Csv.toCsv),
     dependencyCsv <<= print(asciiCsv),
+    dependencyCsvFile <<= target / "dependencies-%s.csv".format(config.toString),
+    dependencyCsvToFile <<= dependencyCsvToFileTask,
     whatDependsOn <<= InputTask(artifactIdParser) { module =>
       (module, streams, moduleGraph) map { (module, streams, graph) =>
         streams.log.info(IvyGraphMLDependencies.asciiTree(IvyGraphMLDependencies.reverseGraphStartingAt(graph, module)))
@@ -156,6 +162,12 @@ object Plugin extends sbt.Plugin {
 
       val resultFile = IvyGraphMLDependencies.saveAsDot(graph, dotHead, nodeLabel, outFile)
       streams.log.info("Wrote dependency graph to '%s'" format resultFile)
+      resultFile
+    }
+  def dependencyCsvToFileTask =
+    (asciiCsv, dependencyCsvFile, streams) map { (csv, resultFile, streams) =>
+      sbt.IO.write(resultFile, csv)
+      streams.log.info("Wrote dependency csv to '%s'" format resultFile)
       resultFile
     }
   def absoluteReportPath = (file: File) => file.getAbsolutePath
