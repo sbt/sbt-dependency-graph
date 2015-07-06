@@ -33,8 +33,9 @@ Tasks
  * `dependency-dot`: Generates a .dot file with the project's dependencies to `target/dependencies-<config>.dot`.
     Use [graphviz](http://www.graphviz.org/) to render it to your preferred graphic format.
  * `dependency-tree`: Shows an ASCII tree representation of the project's dependencies
- * `what-depends-on <organization> <module> <revision>`: Find out what depends on an artifact. Shows a reverse dependency
-   tree for the selected module.
+ * `what-depends-on <organization> <module> <revision>`: Find out what depends on an artifact. Shows a reverse dependency tree for the selected module.
+   
+   Eg. `sbt "what-depends-on xxx xx xx"`
  * `dependency-license-info`: show dependencies grouped by declared license
  * `ivy-report`: let's ivy generate the resolution report for you project. Use
    `show ivy-report` for the filename of the generated report
