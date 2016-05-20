@@ -16,8 +16,12 @@
 
 package net.virtualvoid.sbt.graph
 
+import sbt.compat.SbtCompat._
+
 import sbt._
 import Keys._
+import syntax._
+import internal.librarymanagement._
 
 import CrossVersion._
 
@@ -168,7 +172,7 @@ object DependencyGraphSettings {
       graph.nodes.filter(_.isUsed).groupBy(_.license).toSeq.sortBy(_._1).map {
         case (license, modules) ⇒
           license.getOrElse("No license specified") + "\n" +
-            modules.map(_.id.idString formatted "\t %s").mkString("\n")
+            modules.map("\t %s" format _.id.idString).mkString("\n")
       }.mkString("\n\n")
     streams.log.info(output)
   }
@@ -180,7 +184,7 @@ object DependencyGraphSettings {
     (Space ~> token("--force")).?.map(_.isDefined)
   }
 
-  val artifactIdParser: Initialize[State ⇒ Parser[ModuleId]] =
+  val artifactIdParser: Def.Initialize[State ⇒ Parser[ModuleId]] =
     resolvedScoped { ctx ⇒
       (state: State) ⇒
         val graph = loadFromContext(moduleGraphStore, ctx, state) getOrElse ModuleGraph(Nil, Nil)
@@ -238,7 +242,7 @@ object DependencyGraphSettings {
           case _                                         ⇒ Nil
         }
       val subScalaJars: String ⇒ Seq[File] = SbtAccess.unmanagedScalaInstanceOnly.value match {
-        case Some(si) ⇒ subUnmanaged(si.version, si.jars)
+        case Some(si) ⇒ subUnmanaged(si.version, si.allJars)
         case None     ⇒ sv ⇒ if (scalaProvider.version == sv) scalaProvider.jars else Nil
       }
       val transform: UpdateReport ⇒ UpdateReport = r ⇒ Classpaths.substituteScalaFiles(scalaOrganization.value, r)(subScalaJars)

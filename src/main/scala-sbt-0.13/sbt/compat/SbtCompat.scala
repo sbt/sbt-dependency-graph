@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Johannes Rudolph
+ * Copyright 2016 Johannes Rudolph
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -14,14 +14,19 @@
  *    limitations under the License.
  */
 
-package sbt
+package sbt.compat
 
-import sbt.compat.SbtCompat._
-import internal.util.JLine
+object SbtCompat {
+  implicit def convertProcess(process: sbt.Process): scala.sys.process.Process =
+    new scala.sys.process.Process {
+      def exitValue(): Int = process.exitValue()
+      def destroy(): Unit = process.destroy()
+    }
 
-/** Accessors to private[sbt] symbols. */
-object SbtAccess {
-  val unmanagedScalaInstanceOnly = Defaults.unmanagedScalaInstanceOnly
-
-  def getTerminalWidth: Int = JLine.usingTerminal(_.getWidth)
+  object internal {
+    object librarymanagement
+    object util {
+      val JLine: { def usingTerminal[T](f: jline.Terminal => T): T } = sbt.JLine
+    }
+  }
 }

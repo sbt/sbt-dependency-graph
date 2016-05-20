@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Johannes Rudolph
+ * Copyright 2016 Johannes Rudolph
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,12 +16,4 @@
 
 package sbt
 
-import sbt.compat.SbtCompat._
-import internal.util.JLine
-
-/** Accessors to private[sbt] symbols. */
-object SbtAccess {
-  val unmanagedScalaInstanceOnly = Defaults.unmanagedScalaInstanceOnly
-
-  def getTerminalWidth: Int = JLine.usingTerminal(_.getWidth)
-}
+object syntax
