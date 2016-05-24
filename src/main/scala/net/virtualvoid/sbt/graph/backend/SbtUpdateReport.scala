@@ -38,6 +38,7 @@ object SbtUpdateReport {
       (Module(
         id = report.module,
         license = report.licenses.headOption.map(_._1),
+        homepage = report.homepage,
         evictedByVersion = evictedByVersion,
         jarFile = jarFile,
         error = report.problem),
