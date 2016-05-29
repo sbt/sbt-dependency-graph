@@ -29,6 +29,7 @@ This plugin is an auto-plugin which will be automatically enabled starting from 
  * `whatDependsOn <organization> <module> <revision>`: Find out what depends on an artifact. Shows a reverse dependency
    tree for the selected module.
  * `dependencyLicenseInfo`: show dependencies grouped by declared license
+ * `dependencyHomepageInfo`: show dependencies' homepage info
  * `dependencyStats`: Shows a table with each module a row with (transitive) Jar sizes and number of dependencies
  * `dependencyGraphMl`: Generates a `.graphml` file with the project's dependencies to `target/dependencies-<config>.graphml`.
    Use e.g. [yEd](http://www.yworks.com/en/products_yed_about.html) to format the graph to your needs.
@@ -46,6 +47,7 @@ assumed as usual.
  * `filterScalaLibrary`: Defines if the scala library should be excluded from the output of the dependency-* functions.
    If `true`, instead of showing the dependency `"[S]"` is appended to the artifact name. Set to `false` if
    you want the scala-library dependency to appear in the output. (default: true)
+ * `dependencyFilter`: defines regexp expression to list dependencies for task `dependencyHomepageInfo`  
  * `dependencyGraphMLFile`: a setting which allows configuring the output path of `dependency-graph-ml`.
  * `dependencyDotFile`: a setting which allows configuring the output path of `dependency-dot`.
  * `dependencyDotHeader`: a setting to customize the header of the dot file (e.g. to set your preferred node shapes).

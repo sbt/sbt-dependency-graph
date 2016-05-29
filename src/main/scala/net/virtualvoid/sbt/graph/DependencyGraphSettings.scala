@@ -18,16 +18,14 @@ package net.virtualvoid.sbt.graph
 
 import sbt._
 import Keys._
-
 import CrossVersion._
-
 import sbt.complete.Parser
-
 import org.apache.ivy.core.resolve.ResolveOptions
-
 import net.virtualvoid.sbt.graph.backend.{ IvyReport, SbtUpdateReport }
 import net.virtualvoid.sbt.graph.rendering.DagreHTML
 import net.virtualvoid.sbt.graph.util.IOUtil
+
+import scala.util.matching.Regex
 
 object DependencyGraphSettings {
   import DependencyGraphKeys._
@@ -37,7 +35,8 @@ object DependencyGraphSettings {
     ivyReportFunction <<= ivyReportFunctionTask,
     updateConfiguration in ignoreMissingUpdate <<= updateConfiguration(config ⇒ new UpdateConfiguration(config.retrieve, true, config.logging)),
     ignoreMissingUpdateT,
-    filterScalaLibrary in Global := true) ++ Seq(Compile, Test, Runtime, Provided, Optional).flatMap(ivyReportForConfig)
+    filterScalaLibrary in Global := true,
+    dependencyFilter in Global := ".*") ++ Seq(Compile, Test, Runtime, Provided, Optional).flatMap(ivyReportForConfig)
 
   def ivyReportForConfig(config: Configuration) = inConfig(config)(Seq(
     ivyReport <<= ivyReportFunction map (_(config.toString)) dependsOn (ignoreMissingUpdate),
@@ -101,7 +100,8 @@ object DependencyGraphSettings {
         streams.log.info(rendering.AsciiTree.asciiTree(GraphTransformations.reverseGraphStartingAt(graph, module)))
       }
     },
-    licenseInfo <<= (moduleGraph, streams) map showLicenseInfo))
+    licenseInfo <<= (moduleGraph, streams) map showLicenseInfo,
+    homepageInfo <<= (moduleGraph, streams, dependencyFilter) map showHomepageInfo))
 
   def ivyReportFunctionTask =
     (sbtVersion, target, projectID, ivyModule, appConfiguration, streams) map { (sbtV, target, projectID, ivyModule, config, streams) ⇒
@@ -164,13 +164,26 @@ object DependencyGraphSettings {
     (streams, moduleGraph) map ((streams, graph) ⇒ streams.log.info(f(graph)))
 
   def showLicenseInfo(graph: ModuleGraph, streams: TaskStreams) {
-    val output =
+    val output: String =
       graph.nodes.filter(_.isUsed).groupBy(_.license).toSeq.sortBy(_._1).map {
         case (license, modules) ⇒
           license.getOrElse("No license specified") + "\n" +
             modules.map(_.id.idString formatted "\t %s").mkString("\n")
       }.mkString("\n\n")
     streams.log.info(output)
+  }
+
+  def showHomepageInfo(graph: ModuleGraph, streams: TaskStreams, filter: String) {
+    val output: Seq[String] =
+      graph.nodes.filter(_.isUsed).map {
+        case x: Any ⇒ x.id + " - " + x.homepage.getOrElse("None")
+      }
+    val f = filter.r
+    streams.log.info(message = output.distinct.filter(x ⇒ f.findFirstIn(x).isDefined).mkString("\n"))
+  }
+
+  def logme(graph: ModuleGraph, streams: TaskStreams) = {
+    streams.log.info(graph.toString)
   }
 
   import Project._

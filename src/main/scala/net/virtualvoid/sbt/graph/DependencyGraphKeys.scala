@@ -64,9 +64,14 @@ trait DependencyGraphKeys {
   val ignoreMissingUpdate = Keys.update in ivyReport
   val filterScalaLibrary = SettingKey[Boolean]("filter-scala-library",
     "Specifies if scala dependency should be filtered in dependency-* output")
+  val dependencyFilter = SettingKey[String]("filter-dependencies",
+    "Specifies regex expression to filter dependencies listed")
 
   val licenseInfo = TaskKey[Unit]("dependency-license-info",
     "Aggregates and shows information about the licenses of dependencies")
+
+  val homepageInfo = TaskKey[Unit]("dependency-homepage-info",
+    "Homepage information about dependencies")
 
   // internal
   private[graph] val moduleGraphStore = TaskKey[ModuleGraph]("module-graph-store", "The stored module-graph from the last run")

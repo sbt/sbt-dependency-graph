@@ -27,6 +27,7 @@ case class ModuleId(organisation: String,
 }
 case class Module(id: ModuleId,
                   license: Option[String] = None,
+                  homepage: Option[String] = None,
                   extraInfo: String = "",
                   evictedByVersion: Option[String] = None,
                   jarFile: Option[File] = None,
@@ -65,6 +66,6 @@ import sbinary.{ Format, DefaultProtocol }
 object ModuleGraphProtocol extends DefaultProtocol {
   implicit def seqFormat[T: Format]: Format[Seq[T]] = wrap[Seq[T], List[T]](_.toList, _.toSeq)
   implicit val ModuleIdFormat: Format[ModuleId] = asProduct3(ModuleId)(ModuleId.unapply(_).get)
-  implicit val ModuleFormat: Format[Module] = asProduct6(Module)(Module.unapply(_).get)
+  implicit val ModuleFormat: Format[Module] = asProduct7(Module)(Module.unapply(_).get)
   implicit val ModuleGraphFormat: Format[ModuleGraph] = asProduct2(ModuleGraph.apply _)(ModuleGraph.unapply(_).get)
 }
