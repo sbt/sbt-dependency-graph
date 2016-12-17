@@ -42,7 +42,7 @@ object DOT {
       graph.nodes.filter(_.isEvicted).map(m ⇒ Edge(m.id, m.id.copy(version = m.evictedByVersion.get)))
 
     // remove edges to new evicted-by module which is now replaced by a chain
-    // dependend -> [evicted] -> dependee
+    // dependent -> [evicted] -> dependee
     val evictionTargetEdges =
       graph.edges.filter(targetWasEvicted).map {
         case (from, evicted) ⇒ (from, evicted.copy(version = graph.module(evicted).evictedByVersion.get))
