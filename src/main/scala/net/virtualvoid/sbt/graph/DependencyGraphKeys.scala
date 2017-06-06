@@ -51,6 +51,12 @@ trait DependencyGraphKeys {
     "Prints the ascii graph to the console")
   val asciiTree = TaskKey[String]("dependency-tree-string",
     "Returns a string containing an ascii tree representation of the dependency graph for a project")
+  val jsonTree = TaskKey[String]("dependency-tree-json-string",
+    "Returns a json string dependency tree of non-evicted/used modules")
+  val dependencyJsonTree = TaskKey[File]("dependency-tree-json",
+    "Prints an json tree of all the dependencies to the console")
+  val dependencyJsonFile = SettingKey[File]("dependency-json-file",
+    "The location the json file should be generated at")
   val dependencyTree = TaskKey[Unit]("dependency-tree",
     "Prints an ascii tree of all the dependencies to the console")
   val dependencyList = TaskKey[Unit]("dependency-list",

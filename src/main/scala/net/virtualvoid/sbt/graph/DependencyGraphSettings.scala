@@ -73,6 +73,9 @@ object DependencyGraphSettings {
       }
     },
     asciiTree <<= moduleGraph map rendering.AsciiTree.asciiTree,
+    jsonTree <<= moduleGraph map { (g: ModuleGraph) ⇒ rendering.JsonTree.json(g, { m: Module ⇒ m.isUsed }).toString() },
+    dependencyJsonTree <<= writeToFile(jsonTree, dependencyJsonFile),
+    dependencyJsonFile <<= target / "dependencies-%s.js".format(config.toString),
     dependencyTree <<= print(asciiTree),
     dependencyGraphMLFile <<= target / "dependencies-%s.graphml".format(config.toString),
     dependencyGraphML <<= dependencyGraphMLTask,
