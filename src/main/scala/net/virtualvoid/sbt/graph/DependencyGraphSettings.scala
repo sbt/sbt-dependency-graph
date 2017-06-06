@@ -34,60 +34,62 @@ object DependencyGraphSettings {
   import ModuleGraphProtocol._
 
   def graphSettings = Seq(
-    ivyReportFunction <<= ivyReportFunctionTask,
-    updateConfiguration in ignoreMissingUpdate <<= updateConfiguration(config ⇒ new UpdateConfiguration(config.retrieve, true, config.logging)),
+    ivyReportFunction := ivyReportFunctionTask.value,
+    updateConfiguration in ignoreMissingUpdate := updateConfiguration(config ⇒ new UpdateConfiguration(config.retrieve, true, config.logging)).value,
     ignoreMissingUpdateT,
     filterScalaLibrary in Global := true) ++ Seq(Compile, Test, IntegrationTest, Runtime, Provided, Optional).flatMap(ivyReportForConfig)
 
   def ivyReportForConfig(config: Configuration) = inConfig(config)(Seq(
-    ivyReport <<= ivyReportFunction map (_(config.toString)) dependsOn (ignoreMissingUpdate),
-    crossProjectId <<= (scalaVersion, scalaBinaryVersion, projectID)((sV, sBV, id) ⇒ CrossVersion(sV, sBV)(id)),
-    moduleGraphSbt <<= moduleGraphSbtTask,
-    moduleGraphIvyReport <<= moduleGraphIvyReportTask,
-    moduleGraph <<= (sbtVersion, moduleGraphSbt, moduleGraphIvyReport) { (version, graphSbt, graphIvy) ⇒
-      version match {
-        case Version(0, 13, x, _) if x >= 6 ⇒ graphSbt
-        case _                              ⇒ graphIvy
+    ivyReport := ivyReportFunction.map(_(config.toString)).dependsOn(ignoreMissingUpdate).value,
+    crossProjectId := CrossVersion(scalaVersion.value, scalaBinaryVersion.value)(projectID.value),
+    moduleGraphSbt := moduleGraphSbtTask.value,
+    moduleGraphIvyReport := moduleGraphIvyReportTask.value,
+    moduleGraph := {
+      sbtVersion.value match {
+        case Version(0, 13, x, _) if x >= 6 ⇒ moduleGraphSbt.value
+        case _                              ⇒ moduleGraphIvyReport.value
       }
     },
-    moduleGraph <<= (scalaVersion, moduleGraph, filterScalaLibrary) map { (scalaV, graph, filter) ⇒
-      if (filter) GraphTransformations.ignoreScalaLibrary(scalaV, graph)
-      else graph
+    moduleGraph := {
+      if (filterScalaLibrary.value) GraphTransformations.ignoreScalaLibrary(scalaVersion.value, moduleGraph.value)
+      else moduleGraph.value
     },
-    moduleGraphStore <<= moduleGraph storeAs moduleGraphStore triggeredBy moduleGraph,
-    asciiGraph <<= moduleGraph map rendering.AsciiGraph.asciiGraph,
-    dependencyGraph <<= InputTask(shouldForceParser) { force ⇒
-      (force, moduleGraph, streams) map { (force, graph, streams) ⇒
-        if (force || graph.nodes.size < 15) {
-          streams.log.info(rendering.AsciiGraph.asciiGraph(graph))
-          streams.log.info("\n\n")
-          streams.log.info("Note: The old tree layout is still available by using `dependency-tree`")
-        } else {
-          streams.log.info(rendering.AsciiTree.asciiTree(graph))
+    moduleGraphStore := (moduleGraph storeAs moduleGraphStore triggeredBy moduleGraph).value,
+    asciiGraph := rendering.AsciiGraph.asciiGraph(moduleGraph.value),
+    dependencyGraph := Def.inputTask {
+      val force = shouldForceParser.parsed
+      val graph = moduleGraph.value
+      val log = streams.value.log
+      if (force || graph.nodes.size < 15) {
+        log.info(rendering.AsciiGraph.asciiGraph(graph))
+        log.info("\n\n")
+        log.info("Note: The old tree layout is still available by using `dependency-tree`")
+      } else {
+        log.info(rendering.AsciiTree.asciiTree(graph))
 
-          if (!force) {
-            streams.log.info("\n")
-            streams.log.info("Note: The graph was estimated to be too big to display (> 15 nodes). Use `sbt 'dependency-graph --force'` (with the single quotes) to force graph display.")
-          }
+        if (!force) {
+          log.info("\n")
+          log.info("Note: The graph was estimated to be too big to display (> 15 nodes). Use `sbt 'dependency-graph --force'` (with the single quotes) to force graph display.")
         }
       }
     },
-    asciiTree <<= moduleGraph map rendering.AsciiTree.asciiTree,
-    dependencyTree <<= print(asciiTree),
-    dependencyGraphMLFile <<= target / "dependencies-%s.graphml".format(config.toString),
-    dependencyGraphML <<= dependencyGraphMLTask,
-    dependencyDotFile <<= target / "dependencies-%s.dot".format(config.toString),
-    dependencyDotString <<= dependencyDotStringTask,
-    dependencyDot <<= writeToFile(dependencyDotString, dependencyDotFile),
-    dependencyBrowseGraphTarget <<= target / "browse-dependency-graph",
-    dependencyBrowseGraphHTML <<= browseGraphHTMLTask,
-    dependencyBrowseGraph <<= (dependencyBrowseGraphHTML, streams).map { (uri, streams) ⇒
-      streams.log.info("Opening in browser...")
+    asciiTree := rendering.AsciiTree.asciiTree(moduleGraph.value),
+    dependencyTree := print(asciiTree),
+    dependencyGraphMLFile := target.value / "dependencies-%s.graphml".format(config.toString),
+    dependencyGraphML := dependencyGraphMLTask.value,
+    dependencyDotFile := target.value / "dependencies-%s.dot".format(config.toString),
+    dependencyDotString := dependencyDotStringTask.value,
+    dependencyDot := writeToFile(dependencyDotString, dependencyDotFile).value,
+    dependencyBrowseGraphTarget := target.value / "browse-dependency-graph",
+    dependencyBrowseGraphHTML := browseGraphHTMLTask.value,
+    dependencyBrowseGraph := {
+      val uri = dependencyBrowseGraphHTML.value
+      streams.value.log.info("Opening in browser...")
       java.awt.Desktop.getDesktop.browse(uri)
       uri
     },
-    dependencyList <<= printFromGraph(rendering.FlatList.render(_, _.id.idString)),
-    dependencyStats <<= printFromGraph(rendering.Statistics.renderModuleStatsList),
+    dependencyList := printFromGraph(rendering.FlatList.render(_, _.id.idString)),
+    dependencyStats := printFromGraph(rendering.Statistics.renderModuleStatsList),
     dependencyDotHeader := """digraph "dependency-graph" {
                              |    graph[rankdir="LR"]
                              |    edge [
@@ -96,72 +98,76 @@ object DependencyGraphSettings {
     dependencyDotNodeLabel := { (organisation: String, name: String, version: String) ⇒
       """%s<BR/><B>%s</B><BR/>%s""".format(organisation, name, version)
     },
-    whatDependsOn <<= InputTask(artifactIdParser) { module ⇒
-      (module, streams, moduleGraph) map { (module, streams, graph) ⇒
-        streams.log.info(rendering.AsciiTree.asciiTree(GraphTransformations.reverseGraphStartingAt(graph, module)))
-      }
+    whatDependsOn := Def.inputTask {
+      val module = artifactIdParser.parsed
+      streams.value.log.info(rendering.AsciiTree.asciiTree(GraphTransformations.reverseGraphStartingAt(moduleGraph.value, module)))
     },
-    licenseInfo <<= (moduleGraph, streams) map showLicenseInfo))
+    licenseInfo := showLicenseInfo(moduleGraph.value, streams.value)))
 
   def ivyReportFunctionTask =
-    (sbtVersion, target, projectID, ivyModule, appConfiguration, streams) map { (sbtV, target, projectID, ivyModule, config, streams) ⇒
-      sbtV match {
+    Def.task {
+      sbtVersion.value match {
         case Version(0, min, fix, _) if min > 12 || (min == 12 && fix >= 3) ⇒
-          (c: String) ⇒ file("%s/resolution-cache/reports/%s-%s-%s.xml".format(target, projectID.organization, crossName(ivyModule), c))
+          (c: String) ⇒ file("%s/resolution-cache/reports/%s-%s-%s.xml".format(target.value, projectID.value.organization, crossName(ivyModule.value), c))
           case Version(0, min, fix, _) if min == 12 && fix >= 1 && fix < 3 ⇒
-          ivyModule.withModule(streams.log) { (i, moduleDesc, _) ⇒
+          ivyModule.value.withModule(streams.value.log) { (i, moduleDesc, _) ⇒
             val id = ResolveOptions.getDefaultResolveId(moduleDesc)
-            (c: String) ⇒ file("%s/resolution-cache/reports/%s/%s-resolved.xml" format (target, id, c))
+            (c: String) ⇒ file("%s/resolution-cache/reports/%s/%s-resolved.xml" format (target.value, id, c))
           }
         case _ ⇒
-          val home = config.provider.scalaProvider.launcher.ivyHome
-          (c: String) ⇒ file("%s/cache/%s-%s-%s.xml" format (home, projectID.organization, crossName(ivyModule), c))
+          val home = appConfiguration.value.provider.scalaProvider.launcher.ivyHome
+          (c: String) ⇒ file("%s/cache/%s-%s-%s.xml" format (home, projectID.value.organization, crossName(ivyModule.value), c))
       }
     }
 
   def moduleGraphIvyReportTask = ivyReport map (absoluteReportPath.andThen(IvyReport.fromReportFile))
   def moduleGraphSbtTask =
-    (ignoreMissingUpdate, crossProjectId, configuration) map { (update, root, config) ⇒
-      update.configuration(config.name).map(report ⇒ SbtUpdateReport.fromConfigurationReport(report, root)).getOrElse(ModuleGraph.empty)
+    Def.task {
+      ignoreMissingUpdate.value.configuration(configuration.value.name).map(report ⇒ SbtUpdateReport.fromConfigurationReport(report, crossProjectId.value)).getOrElse(ModuleGraph.empty)
     }
 
-  def printAsciiGraphTask =
-    (streams, asciiGraph) map (_.log.info(_))
+  def printAsciiGraphTask = Def.task {
+    streams.value.log.info(asciiGraph.value)
+  }
 
   def dependencyGraphMLTask =
-    (moduleGraph, dependencyGraphMLFile, streams) map { (graph, resultFile, streams) ⇒
-      rendering.GraphML.saveAsGraphML(graph, resultFile.getAbsolutePath)
-      streams.log.info("Wrote dependency graph to '%s'" format resultFile)
+    Def.task {
+      val resultFile = dependencyGraphMLFile.value
+      rendering.GraphML.saveAsGraphML(moduleGraph.value, resultFile.getAbsolutePath)
+      streams.value.log.info("Wrote dependency graph to '%s'" format resultFile)
       resultFile
     }
   def dependencyDotStringTask =
-    (moduleGraph, dependencyDotHeader, dependencyDotNodeLabel).map {
-      (graph, dotHead, nodeLabel) ⇒ rendering.DOT.dotGraph(graph, dotHead, nodeLabel, rendering.DOT.AngleBrackets)
+    Def.task {
+      rendering.DOT.dotGraph(moduleGraph.value, dependencyDotHeader.value, dependencyDotNodeLabel.value, rendering.DOT.AngleBrackets)
     }
 
   def browseGraphHTMLTask =
-    (moduleGraph, dependencyDotHeader, dependencyDotNodeLabel, dependencyBrowseGraphTarget, streams).map { (graph, dotHead, nodeLabel, target, streams) ⇒
-      val dotGraph = rendering.DOT.dotGraph(graph, dotHead, nodeLabel, rendering.DOT.LabelTypeHtml)
-      val link = DagreHTML.createLink(dotGraph, target)
-      streams.log.info(s"HTML graph written to $link")
+    Def.task {
+      val dotGraph = rendering.DOT.dotGraph(moduleGraph.value, dependencyDotHeader.value, dependencyDotNodeLabel.value, rendering.DOT.LabelTypeHtml)
+      val link = DagreHTML.createLink(dotGraph, dependencyBrowseGraphTarget.value)
+      streams.value.log.info(s"HTML graph written to $link")
       link
     }
 
   def writeToFile(dataTask: TaskKey[String], fileTask: SettingKey[File]) =
-    (dataTask, fileTask, streams).map { (data, outFile, streams) ⇒
-      IOUtil.writeToFile(data, outFile)
+    Def.task {
+      val outFile = fileTask.value
+      IOUtil.writeToFile(dataTask.value, outFile)
 
-      streams.log.info("Wrote dependency graph to '%s'" format outFile)
+      streams.value.log.info("Wrote dependency graph to '%s'" format outFile)
       outFile
     }
 
   def absoluteReportPath = (file: File) ⇒ file.getAbsolutePath
 
-  def print(key: TaskKey[String]) =
-    (streams, key) map (_.log.info(_))
+  def print(key: TaskKey[String]) = Def.task {
+    streams.value.log.info(key.value)
+  }
 
-  def printFromGraph(f: ModuleGraph ⇒ String) =
-    (streams, moduleGraph) map ((streams, graph) ⇒ streams.log.info(f(graph)))
+  def printFromGraph(f: ModuleGraph ⇒ String) = Def.task {
+    streams.value.log.info(f(moduleGraph.value))
+  }
 
   def showLicenseInfo(graph: ModuleGraph, streams: TaskStreams) {
     val output =
@@ -180,7 +186,7 @@ object DependencyGraphSettings {
     (Space ~> token("--force")).?.map(_.isDefined)
   }
 
-  val artifactIdParser: Initialize[State ⇒ Parser[ModuleId]] =
+  val artifactIdParser: Def.Initialize[State ⇒ Parser[ModuleId]] =
     resolvedScoped { ctx ⇒
       (state: State) ⇒
         val graph = loadFromContext(moduleGraphStore, ctx, state) getOrElse ModuleGraph(Nil, Nil)
@@ -222,7 +228,7 @@ object DependencyGraphSettings {
    * to ignore missing artifacts.
    */
   def ignoreMissingUpdateT =
-    ignoreMissingUpdate <<= Def.task {
+    ignoreMissingUpdate := {
       val depsUpdated = transitiveUpdate.value.exists(!_.stats.cached)
       val isRoot = executionRoots.value contains resolvedScoped.value
       val s = streams.value
