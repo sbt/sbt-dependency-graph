@@ -25,4 +25,6 @@ object DependencyGraphPlugin extends AutoPlugin {
   override def projectSettings: Seq[Def.Setting[_]] = DependencyGraphSettings.graphSettings
 
   override def trigger: PluginTrigger = AllRequirements
+
+  override def requires: Plugins = plugins.JvmPlugin
 }
