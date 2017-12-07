@@ -18,6 +18,7 @@ package net.virtualvoid.sbt.graph
 
 import java.io.File
 
+import net.virtualvoid.sbt.graph.ModuleGraph.DepMap
 import sbinary.Format
 
 import scala.collection.mutable.{ HashMap, MultiMap, Set }
@@ -40,6 +41,8 @@ case class Module(id: ModuleId,
 
 object ModuleGraph {
   val empty = ModuleGraph(Seq.empty, Seq.empty)
+
+  type DepMap = Map[ModuleId, Seq[Module]]
 }
 
 case class ModuleGraph(nodes: Seq[Module], edges: Seq[Edge]) {
@@ -48,13 +51,13 @@ case class ModuleGraph(nodes: Seq[Module], edges: Seq[Edge]) {
 
   def module(id: ModuleId): Module = modules(id)
 
-  lazy val dependencyMap: Map[ModuleId, Seq[Module]] =
+  lazy val dependencyMap: DepMap =
     createMap(identity)
 
-  lazy val reverseDependencyMap: Map[ModuleId, Seq[Module]] =
+  lazy val reverseDependencyMap: DepMap =
     createMap { case (a, b) ⇒ (b, a) }
 
-  def createMap(bindingFor: ((ModuleId, ModuleId)) ⇒ (ModuleId, ModuleId)): Map[ModuleId, Seq[Module]] = {
+  def createMap(bindingFor: ((ModuleId, ModuleId)) ⇒ (ModuleId, ModuleId)): DepMap = {
     val m = new HashMap[ModuleId, Set[Module]] with MultiMap[ModuleId, Module]
     edges.foreach { entry ⇒
       val (f, t) = bindingFor(entry)
