@@ -16,7 +16,7 @@
 
 package net.virtualvoid.sbt.graph.rendering
 
-import net.virtualvoid.sbt.graph.ModuleGraph
+import net.virtualvoid.sbt.graph.model.ModuleGraph
 
 import scala.xml.XML
 

@@ -19,6 +19,7 @@ package rendering
 
 import com.github.mdr.ascii.layout._
 import net.virtualvoid.sbt.graph.DependencyGraphKeys._
+import net.virtualvoid.sbt.graph.model.{ Module, ModuleGraph }
 import sbt.Keys._
 
 object AsciiGraph {

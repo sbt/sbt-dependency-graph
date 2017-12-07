@@ -18,6 +18,7 @@ package net.virtualvoid.sbt.graph
 
 import net.virtualvoid.sbt.graph.GraphTransformations.reverseGraphStartingAt
 import net.virtualvoid.sbt.graph.backend.{ IvyReport, SbtUpdateReport }
+import net.virtualvoid.sbt.graph.model.{ ModuleGraph, ModuleId }
 import net.virtualvoid.sbt.graph.rendering.{ AsciiGraph, AsciiTree, DagreHTML }
 import net.virtualvoid.sbt.graph.util.IOUtil
 import sbt.Keys._
@@ -31,7 +32,7 @@ import scala.language.reflectiveCalls
 
 object DependencyGraphSettings {
   import DependencyGraphKeys._
-  import ModuleGraphProtocol._
+  import net.virtualvoid.sbt.graph.model.ModuleGraphProtocol._
 
   def graphSettings = baseSettings ++ reportSettings
 

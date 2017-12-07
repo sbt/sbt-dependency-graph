@@ -17,6 +17,7 @@
 package net.virtualvoid.sbt.graph
 package rendering
 
+import net.virtualvoid.sbt.graph.model.{ Module, ModuleGraph }
 import util.AsciiTreeLayout.toAscii
 import util.ConsoleUtils._
 

@@ -16,6 +16,7 @@
 
 package net.virtualvoid.sbt.graph
 
+import net.virtualvoid.sbt.graph.model.ModuleGraph
 import sbt._
 
 trait DependencyGraphKeys {

@@ -16,6 +16,8 @@
 
 package net.virtualvoid.sbt.graph
 
+import net.virtualvoid.sbt.graph.model.{ Module, ModuleGraph, ModuleId }
+
 object GraphTransformations {
   def reverseGraphStartingAt(graph: ModuleGraph, root: ModuleId): ModuleGraph = {
     val deps = graph.reverseDependencyMap
