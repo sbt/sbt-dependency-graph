@@ -22,7 +22,7 @@ import sbt._
 import Keys._
 import sbt.complete.Parser
 import net.virtualvoid.sbt.graph.backend.{ IvyReport, SbtUpdateReport }
-import net.virtualvoid.sbt.graph.rendering.{ AsciiGraph, DagreHTML }
+import net.virtualvoid.sbt.graph.rendering.{ AsciiGraph, AsciiTree, DagreHTML }
 import net.virtualvoid.sbt.graph.util.IOUtil
 import internal.librarymanagement._
 import librarymanagement._
@@ -65,7 +65,7 @@ object DependencyGraphSettings {
       else moduleGraph
     },
     moduleGraphStore := (moduleGraph storeAs moduleGraphStore triggeredBy moduleGraph).value,
-    asciiTree := rendering.AsciiTree.asciiTree(moduleGraph.value),
+    asciiTree := AsciiTree(moduleGraph.value),
     dependencyTree := print(asciiTree).value,
     dependencyGraphMLFile := { target.value / "dependencies-%s.graphml".format(config.toString) },
     dependencyGraphML := dependencyGraphMLTask.value,
@@ -93,7 +93,7 @@ object DependencyGraphSettings {
     },
     whatDependsOn := {
       val module = artifactIdParser.parsed
-      streams.value.log.info(rendering.AsciiTree.asciiTree(GraphTransformations.reverseGraphStartingAt(moduleGraph.value, module)))
+      streams.value.log.info(AsciiTree(GraphTransformations.reverseGraphStartingAt(moduleGraph.value, module)))
     },
     licenseInfo := showLicenseInfo(moduleGraph.value, streams.value)) ++ AsciiGraph.asciiGraphSetttings)
 

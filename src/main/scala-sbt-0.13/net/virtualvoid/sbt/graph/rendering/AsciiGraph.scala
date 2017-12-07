@@ -49,7 +49,7 @@ object AsciiGraph {
         log.info("Note: The old tree layout is still available by using `dependency-tree`")
       }
 
-      log.info(rendering.AsciiTree.asciiTree(moduleGraph.value))
+      log.info(AsciiTree(moduleGraph.value))
 
       if (!force) {
         log.info("\n")
