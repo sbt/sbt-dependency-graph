@@ -17,13 +17,13 @@
 package net.virtualvoid.sbt.graph
 package rendering
 
-import net.virtualvoid.sbt.graph.model.{ Module, ModuleGraph }
+import net.virtualvoid.sbt.graph.model.{ FilterRule, Module, ModuleGraph }
 import util.AsciiTreeLayout.toAscii
 import util.ConsoleUtils._
 
 object AsciiTree {
-  def asciiTree(graph: ModuleGraph): String = {
-    val deps = graph.dependencyMap
+  def apply(graph: ModuleGraph, filterRules: FilterRule*): String = {
+    val deps = graph.filter(filterRules: _*)
 
     // there should only be one root node (the project itself)
     graph

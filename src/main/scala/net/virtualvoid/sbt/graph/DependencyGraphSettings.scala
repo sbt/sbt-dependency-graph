@@ -18,7 +18,7 @@ package net.virtualvoid.sbt.graph
 
 import net.virtualvoid.sbt.graph.GraphTransformations.reverseGraphStartingAt
 import net.virtualvoid.sbt.graph.backend.{ IvyReport, SbtUpdateReport }
-import net.virtualvoid.sbt.graph.model.{ ModuleGraph, ModuleId }
+import net.virtualvoid.sbt.graph.model.{ FilterRule, ModuleGraph, ModuleId }
 import net.virtualvoid.sbt.graph.rendering.{ AsciiGraph, AsciiTree, DagreHTML }
 import net.virtualvoid.sbt.graph.util.IOUtil
 import sbt.Keys._
@@ -76,8 +76,11 @@ object DependencyGraphSettings {
       else moduleGraph
     },
     moduleGraphStore := (moduleGraph storeAs moduleGraphStore triggeredBy moduleGraph).value,
-    asciiTree := AsciiTree(moduleGraph.value),
-    dependencyTree := print(asciiTree).value,
+    asciiTree := AsciiTree(
+      moduleGraph.value,
+      filterRulesParser.parsed: _*
+    ),
+    dependencyTree := streams.value.log.info(asciiTree.evaluated),
     dependencyGraphMLFile := { target.value / "dependencies-%s.graphml".format(config.toString) },
     dependencyGraphML := dependencyGraphMLTask.value,
     dependencyDotFile := { target.value / "dependencies-%s.dot".format(config.toString) },
