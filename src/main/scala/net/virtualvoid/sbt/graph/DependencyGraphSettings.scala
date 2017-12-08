@@ -17,6 +17,8 @@
 package net.virtualvoid.sbt.graph
 
 import scala.language.reflectiveCalls
+import java.nio.file.Files.newOutputStream
+import java.nio.file.{ Path, Paths }
 
 import sbt._
 import Keys._
@@ -25,7 +27,6 @@ import net.virtualvoid.sbt.graph.backend.{ IvyReport, SbtUpdateReport }
 import net.virtualvoid.sbt.graph.rendering.{ AsciiGraph, DagreHTML }
 import net.virtualvoid.sbt.graph.util.IOUtil
 import internal.librarymanagement._
-import librarymanagement._
 import sbt.dependencygraph.DependencyGraphSbtCompat
 import sbt.dependencygraph.DependencyGraphSbtCompat.Implicits._
 
@@ -45,7 +46,7 @@ object DependencyGraphSettings {
     Seq(Compile, Test, IntegrationTest, Runtime, Provided, Optional).flatMap(ivyReportForConfig)
 
   def ivyReportForConfig(config: Configuration) = inConfig(config)(Seq(
-    ivyReport := { Def.task { ivyReportFunction.value.apply(config.toString) } dependsOn (ignoreMissingUpdate) }.value,
+    ivyReport := { Def.task { ivyReportFunction.value.apply(config.toString) } dependsOn ignoreMissingUpdate }.value,
     crossProjectId := sbt.CrossVersion(scalaVersion.value, scalaBinaryVersion.value)(projectID.value),
     moduleGraphSbt :=
       ignoreMissingUpdate.value.configuration(configuration.value).map(report ⇒ SbtUpdateReport.fromConfigurationReport(report, crossProjectId.value)).getOrElse(ModuleGraph.empty),
@@ -66,7 +67,19 @@ object DependencyGraphSettings {
     },
     moduleGraphStore := (moduleGraph storeAs moduleGraphStore triggeredBy moduleGraph).value,
     asciiTree := rendering.AsciiTree.asciiTree(moduleGraph.value),
-    dependencyTree := print(asciiTree).value,
+    dependencyTree := {
+      val tree = asciiTree.value
+      dependencyTreeOutputPathParser.parsed match {
+        case Some(path) ⇒
+          streams.value.log.info(s"Writing dependency-tree to path: $path")
+          val os = newOutputStream(path)
+          os.write(tree.getBytes)
+          os.close()
+        case _ ⇒
+          streams.value.log.info(tree)
+      }
+
+    },
     dependencyGraphMLFile := { target.value / "dependencies-%s.graphml".format(config.toString) },
     dependencyGraphML := dependencyGraphMLTask.value,
     dependencyDotFile := { target.value / "dependencies-%s.dot".format(config.toString) },
@@ -152,11 +165,18 @@ object DependencyGraphSettings {
     streams.log.info(output)
   }
 
-  import Project._
+  import sbt.complete.DefaultParsers._
   val shouldForceParser: State ⇒ Parser[Boolean] = { (state: State) ⇒
-    import sbt.complete.DefaultParsers._
-
     (Space ~> token("--force")).?.map(_.isDefined)
+  }
+
+  val dependencyTreeOutputPathParser: State ⇒ Parser[Option[Path]] = { (state: State) ⇒
+    (
+      Space ~
+      (token("--out") | token("-o")) ~ Space ~>
+      StringBasic)
+      .map(Paths.get(_))
+      .?
   }
 
   val artifactIdParser: Def.Initialize[State ⇒ Parser[ModuleId]] =

@@ -1,0 +1,2 @@
+> dependencyTree -o foo
+> check

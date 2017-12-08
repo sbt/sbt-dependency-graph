@@ -22,6 +22,7 @@ the notes of version [0.8.2](https://github.com/jrudolph/sbt-dependency-graph/tr
 ## Main Tasks
 
  * `dependencyTree`: Shows an ASCII tree representation of the project's dependencies
+   * write output to a file by passing `-o <output path>` arguments
  * `dependencyBrowseGraph`: Opens a browser window with a visualization of the dependency graph (courtesy of graphlib-dot + dagre-d3).
  * `dependencyList`: Shows a flat list of all transitive dependencies on the sbt console (sorted by organization and name)
  * `whatDependsOn <organization> <module> <revision>`: Find out what depends on an artifact. Shows a reverse dependency
