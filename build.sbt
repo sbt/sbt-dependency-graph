@@ -28,3 +28,4 @@ scalacOptions ++= Seq(
 )
 
 ScalariformSupport.formatSettings
+

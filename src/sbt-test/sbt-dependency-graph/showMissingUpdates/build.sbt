@@ -3,9 +3,9 @@ scalaVersion := "2.9.2"
 libraryDependencies +=
   "at.blub" % "blib" % "1.2.3" % "test"
 
-TaskKey[Unit]("check") := {
+InputKey[Unit]("check") := {
   val report = (ivyReport in Test).value
-  val graph = (asciiTree in Test).value
+  val graph = (asciiTree in Test).evaluated
 
   def sanitize(str: String): String = str.split('\n').drop(1).mkString("\n")
   val expectedGraph =

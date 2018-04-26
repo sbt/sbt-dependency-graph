@@ -16,6 +16,8 @@
 
 package net.virtualvoid.sbt
 
+import net.virtualvoid.sbt.graph.model.ModuleId
+
 package object graph {
   type Edge = (ModuleId, ModuleId)
   def Edge(from: ModuleId, to: ModuleId): Edge = from -> to

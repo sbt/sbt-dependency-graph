@@ -17,7 +17,9 @@
 package net.virtualvoid.sbt.graph
 package backend
 
-import scala.xml.{ NodeSeq, Document, Node }
+import net.virtualvoid.sbt.graph.model.{ Module, ModuleGraph, ModuleId }
+
+import scala.xml.{ Document, Node, NodeSeq }
 import scala.xml.parsing.ConstructingParser
 
 object IvyReport {

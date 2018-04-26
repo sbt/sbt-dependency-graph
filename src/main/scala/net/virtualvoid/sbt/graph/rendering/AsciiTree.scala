@@ -17,23 +17,36 @@
 package net.virtualvoid.sbt.graph
 package rendering
 
-import util.AsciiTreeLayout
+import net.virtualvoid.sbt.graph.model.{ FilterRule, Module, ModuleGraph }
+import util.AsciiTreeLayout.toAscii
 import util.ConsoleUtils._
 
 object AsciiTree {
-  def asciiTree(graph: ModuleGraph): String = {
-    val deps = graph.dependencyMap
+  def apply(graph: ModuleGraph, filterRules: FilterRule*): String = {
+    val deps = graph.filter(filterRules: _*)
 
     // there should only be one root node (the project itself)
-    val roots = graph.roots
-    roots.map { root ⇒
-      AsciiTreeLayout.toAscii[Module](root, node ⇒ deps.getOrElse(node.id, Seq.empty[Module]), displayModule)
-    }.mkString("\n")
+    graph
+      .roots
+      .map {
+        root ⇒
+          toAscii[Module](
+            root,
+            node ⇒
+              deps.getOrElse(
+                node.id,
+                Seq.empty[Module]),
+            displayModule)
+      }
+      .mkString("\n")
   }
 
   def displayModule(module: Module): String =
-    red(module.id.idString +
-      module.extraInfo +
-      module.error.map(" (error: " + _ + ")").getOrElse("") +
-      module.evictedByVersion.map(_ formatted " (evicted by: %s)").getOrElse(""), module.hadError)
+    red(
+      module.id.idString +
+        module.extraInfo +
+        module.error.map(" (error: " + _ + ")").getOrElse("") +
+        module.evictedByVersion.map(_ formatted " (evicted by: %s)").getOrElse(""),
+      module.hadError
+    )
 }

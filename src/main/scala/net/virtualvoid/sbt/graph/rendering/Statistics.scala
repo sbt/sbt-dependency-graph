@@ -17,6 +17,8 @@
 package net.virtualvoid.sbt.graph
 package rendering
 
+import net.virtualvoid.sbt.graph.model.{ ModuleGraph, ModuleId }
+
 object Statistics {
   def renderModuleStatsList(graph: ModuleGraph): String = {
     case class ModuleStats(

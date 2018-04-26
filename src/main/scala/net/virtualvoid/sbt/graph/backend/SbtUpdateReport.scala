@@ -17,9 +17,10 @@
 package net.virtualvoid.sbt.graph
 package backend
 
+import net.virtualvoid.sbt.graph.model.{ Module, ModuleGraph, ModuleId }
+
 import scala.language.implicitConversions
 import scala.language.reflectiveCalls
-
 import sbt._
 
 object SbtUpdateReport {

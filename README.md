@@ -21,7 +21,7 @@ the notes of version [0.8.2](https://github.com/jrudolph/sbt-dependency-graph/tr
 
 ## Main Tasks
 
- * `dependencyTree`: Shows an ASCII tree representation of the project's dependencies
+ * `dependencyTree`: Shows an ASCII tree representation of the project's dependencies (see [below](#dependencyTree-filtering) for examples filtering the output)
  * `dependencyBrowseGraph`: Opens a browser window with a visualization of the dependency graph (courtesy of graphlib-dot + dagre-d3).
  * `dependencyList`: Shows a flat list of all transitive dependencies on the sbt console (sorted by organization and name)
  * `whatDependsOn <organization> <module> <revision>`: Find out what depends on an artifact. Shows a reverse dependency
@@ -39,6 +39,43 @@ the notes of version [0.8.2](https://github.com/jrudolph/sbt-dependency-graph/tr
 All tasks can be scoped to a configuration to get the report for a specific configuration. `test:dependencyGraph`,
 for example, prints the dependencies in the `test` configuration. If you don't specify any configuration, `compile` is
 assumed as usual.
+
+### `dependencyTree` filtering
+The `dependencyTree` task supports filtering with inclusion/exclusion rules:
+
+- exclusion rules are prefixed by `-`
+- inclusion rules are the default (or can be prefixed by `+`)
+
+Dependencies are "preserved" iff:
+- they match at least one inclusion rule (or no inclusion rules are provided), and
+- they match no exclusion rules (including when none are provided)
+
+They are then displayed if they are preserved *or at least one of their transitive dependencies is preserved*.
+
+This mimics the behavior of [Maven dependency:tree](https://maven.apache.org/plugins/maven-dependency-plugin/tree-mojo.html)'s `includes` and `excludes` parameters.
+
+#### Examples
+
+Inclusions/Exclusions can be partial-matched against any part of a dependency's Maven coordinate:
+
+```
+dependencyTree -foo          // exclude deps that contain "foo" in the group, name, or version
+dependencyTree foo           // include deps that contain "foo" in the group, name, or version
+```
+
+Or they can be fully-matched against specific parts of the coordinate:
+
+```
+dependencyTree -:foo*        // exclude deps whose name starts with "foo"
+dependencyTree -*foo*::*bar  // exclude deps whose group contains "foo" and version ends with "bar"
+```
+
+Inclusions and exclusions can be combined and repeated:
+```
+dependencyTree foo bar -baz  // include only deps that contain "foo" or "bar" and not "baz"
+```
+
+In all cases, the full paths to dependencies that match the query are displayed (which can mean that dependencies are displayed even though they would have been excluded in their own right, because they form part of a chain to a dependency that was not excluded). 
 
 ## Configuration settings
 

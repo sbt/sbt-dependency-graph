@@ -17,6 +17,8 @@
 package net.virtualvoid.sbt.graph
 package rendering
 
+import net.virtualvoid.sbt.graph.model.ModuleGraph
+
 object DOT {
   val EvictedStyle = "stroke-dasharray: 5,5"
 

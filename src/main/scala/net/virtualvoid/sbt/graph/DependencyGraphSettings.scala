@@ -16,22 +16,23 @@
 
 package net.virtualvoid.sbt.graph
 
-import scala.language.reflectiveCalls
-
-import sbt._
-import Keys._
-import sbt.complete.Parser
+import net.virtualvoid.sbt.graph.GraphTransformations.reverseGraphStartingAt
 import net.virtualvoid.sbt.graph.backend.{ IvyReport, SbtUpdateReport }
-import net.virtualvoid.sbt.graph.rendering.{ AsciiGraph, DagreHTML }
+import net.virtualvoid.sbt.graph.model.{ FilterRule, ModuleGraph, ModuleId }
+import net.virtualvoid.sbt.graph.rendering.{ AsciiGraph, AsciiTree, DagreHTML }
 import net.virtualvoid.sbt.graph.util.IOUtil
-import internal.librarymanagement._
-import librarymanagement._
+import sbt.Keys._
+import sbt._
+import sbt.complete.Parser
 import sbt.dependencygraph.DependencyGraphSbtCompat
 import sbt.dependencygraph.DependencyGraphSbtCompat.Implicits._
+import sbt.internal.librarymanagement._
+
+import scala.language.reflectiveCalls
 
 object DependencyGraphSettings {
   import DependencyGraphKeys._
-  import ModuleGraphProtocol._
+  import net.virtualvoid.sbt.graph.model.ModuleGraphProtocol._
 
   def graphSettings = baseSettings ++ reportSettings
 
@@ -48,7 +49,17 @@ object DependencyGraphSettings {
     ivyReport := { Def.task { ivyReportFunction.value.apply(config.toString) } dependsOn (ignoreMissingUpdate) }.value,
     crossProjectId := sbt.CrossVersion(scalaVersion.value, scalaBinaryVersion.value)(projectID.value),
     moduleGraphSbt :=
-      ignoreMissingUpdate.value.configuration(configuration.value).map(report ⇒ SbtUpdateReport.fromConfigurationReport(report, crossProjectId.value)).getOrElse(ModuleGraph.empty),
+      ignoreMissingUpdate
+      .value
+      .configuration(configuration.value)
+      .map(
+        report ⇒
+          SbtUpdateReport.fromConfigurationReport(
+            report,
+            crossProjectId.value
+          )
+      )
+      .getOrElse(ModuleGraph.empty),
     moduleGraphIvyReport := IvyReport.fromReportFile(absoluteReportPath(ivyReport.value)),
     moduleGraph := {
       sbtVersion.value match {
@@ -65,8 +76,11 @@ object DependencyGraphSettings {
       else moduleGraph
     },
     moduleGraphStore := (moduleGraph storeAs moduleGraphStore triggeredBy moduleGraph).value,
-    asciiTree := rendering.AsciiTree.asciiTree(moduleGraph.value),
-    dependencyTree := print(asciiTree).value,
+    asciiTree := AsciiTree(
+      moduleGraph.value,
+      filterRulesParser.parsed: _*
+    ),
+    dependencyTree := streams.value.log.info(asciiTree.evaluated),
     dependencyGraphMLFile := { target.value / "dependencies-%s.graphml".format(config.toString) },
     dependencyGraphML := dependencyGraphMLTask.value,
     dependencyDotFile := { target.value / "dependencies-%s.dot".format(config.toString) },
@@ -92,8 +106,17 @@ object DependencyGraphSettings {
       """%s<BR/><B>%s</B><BR/>%s""".format(organisation, name, version)
     },
     whatDependsOn := {
-      val module = artifactIdParser.parsed
-      streams.value.log.info(rendering.AsciiTree.asciiTree(GraphTransformations.reverseGraphStartingAt(moduleGraph.value, module)))
+      streams
+        .value
+        .log
+        .info(
+          AsciiTree(
+            reverseGraphStartingAt(
+              moduleGraph.value,
+              artifactIdParser.parsed
+            )
+          )
+        )
     },
     licenseInfo := showLicenseInfo(moduleGraph.value, streams.value)) ++ AsciiGraph.asciiGraphSetttings)
 
@@ -105,7 +128,7 @@ object DependencyGraphSettings {
     (config: String) ⇒ {
       val org = projectID.organization
       val name = crossName(ivyModule)
-      file(s"${crossTarget}/resolution-cache/reports/$org-$name-$config.xml")
+      file(s"$crossTarget/resolution-cache/reports/$org-$name-$config.xml")
     }
   }
 
@@ -151,13 +174,20 @@ object DependencyGraphSettings {
       }.mkString("\n\n")
     streams.log.info(output)
   }
-
-  import Project._
   val shouldForceParser: State ⇒ Parser[Boolean] = { (state: State) ⇒
     import sbt.complete.DefaultParsers._
 
     (Space ~> token("--force")).?.map(_.isDefined)
   }
+
+  val filterRulesParser: Def.Initialize[State ⇒ Parser[Seq[FilterRule]]] =
+    resolvedScoped { ctx ⇒
+      (state: State) ⇒
+        import sbt.complete.DefaultParsers._
+        (Space ~> token(StringBasic, "filter")).*.map {
+          _.map(FilterRule(_))
+        }
+    }
 
   val artifactIdParser: Def.Initialize[State ⇒ Parser[ModuleId]] =
     resolvedScoped { ctx ⇒
@@ -165,15 +195,36 @@ object DependencyGraphSettings {
         val graph = loadFromContext(moduleGraphStore, ctx, state) getOrElse ModuleGraph(Nil, Nil)
 
         import sbt.complete.DefaultParsers._
-        graph.nodes.map(_.id).map {
-          case id @ ModuleId(org, name, version) ⇒
-            (Space ~ token(org) ~ token(Space ~ name) ~ token(Space ~ version)).map(_ ⇒ id)
-        }.reduceOption(_ | _).getOrElse {
-          (Space ~> token(StringBasic, "organization") ~ Space ~ token(StringBasic, "module") ~ Space ~ token(StringBasic, "version")).map {
-            case ((((org, _), mod), _), version) ⇒
-              ModuleId(org, mod, version)
+        graph
+          .nodes
+          .map(_.id)
+          .map {
+            case id @ ModuleId(org, name, version) ⇒
+              (
+                Space ~
+                token(org) ~
+                token(Space ~ name) ~
+                token(Space ~ version))
+                .map(_ ⇒ id)
           }
-        }
+          .reduceOption(_ | _)
+          .getOrElse {
+            (
+              Space ~>
+              token(StringBasic, "organization") ~ Space ~
+              token(StringBasic, "module") ~ Space ~
+              token(StringBasic, "version"))
+              .map {
+                case (
+                  (
+                    ((org, _), mod),
+                    _
+                    ),
+                  version
+                  ) ⇒
+                  ModuleId(org, mod, version)
+              }
+          }
     }
 
   // This is to support 0.13.8's InlineConfigurationWithExcludes while not forcing 0.13.8

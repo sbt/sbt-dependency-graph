@@ -14,12 +14,15 @@
  *    limitations under the License.
  */
 
-package net.virtualvoid.sbt.graph
+package net.virtualvoid.sbt.graph.model
 
 import java.io.File
 
+import net.virtualvoid.sbt.graph.model.ModuleGraph.DepMap
+import net.virtualvoid.sbt.graph.{ Edge, ModuleGraphProtocolCompat }
 import sbinary.Format
 
+import scala.collection.mutable
 import scala.collection.mutable.{ HashMap, MultiMap, Set }
 
 case class ModuleId(organisation: String,
@@ -40,6 +43,8 @@ case class Module(id: ModuleId,
 
 object ModuleGraph {
   val empty = ModuleGraph(Seq.empty, Seq.empty)
+
+  type DepMap = Map[ModuleId, Seq[Module]]
 }
 
 case class ModuleGraph(nodes: Seq[Module], edges: Seq[Edge]) {
@@ -48,13 +53,13 @@ case class ModuleGraph(nodes: Seq[Module], edges: Seq[Edge]) {
 
   def module(id: ModuleId): Module = modules(id)
 
-  lazy val dependencyMap: Map[ModuleId, Seq[Module]] =
+  lazy val dependencyMap: DepMap =
     createMap(identity)
 
-  lazy val reverseDependencyMap: Map[ModuleId, Seq[Module]] =
+  lazy val reverseDependencyMap: DepMap =
     createMap { case (a, b) ⇒ (b, a) }
 
-  def createMap(bindingFor: ((ModuleId, ModuleId)) ⇒ (ModuleId, ModuleId)): Map[ModuleId, Seq[Module]] = {
+  def createMap(bindingFor: ((ModuleId, ModuleId)) ⇒ (ModuleId, ModuleId)): DepMap = {
     val m = new HashMap[ModuleId, Set[Module]] with MultiMap[ModuleId, Module]
     edges.foreach { entry ⇒
       val (f, t) = bindingFor(entry)
@@ -65,6 +70,64 @@ case class ModuleGraph(nodes: Seq[Module], edges: Seq[Edge]) {
 
   def roots: Seq[Module] =
     nodes.filter(n ⇒ !edges.exists(_._2 == n.id)).sortBy(_.id.idString)
+
+  def filter(rules: FilterRule*): DepMap = {
+    val map = mutable.Map[ModuleId, Option[Seq[Module]]]()
+
+    // Are any include- (resp. exclude-) rules present in `rules`?
+    var (hasIncludes, hasExcludes) = (false, false)
+    rules foreach {
+      case _: Include ⇒ hasIncludes = true
+      case _: Exclude ⇒ hasExcludes = true
+    }
+
+    // Does a given ID satisfy at least one include (if any are present?)
+    def matchesInclude(id: ModuleId): Boolean =
+      !hasIncludes ||
+        rules.exists {
+          case inc: Include if inc(id) ⇒ true
+          case _                       ⇒ false
+        }
+
+    // Is a given ID excluded? 
+    def matchesExcludes(id: ModuleId): Boolean =
+      !hasExcludes ||
+        !rules.exists {
+          case exc: Exclude if exc(id) ⇒ true
+          case _                       ⇒ false
+        }
+
+    // Keep an ID iff it satisfies at least one include (if any have been provided), and is not excluded
+    def keep(id: ModuleId): Boolean = matchesInclude(id) && matchesExcludes(id)
+
+    def filtered(id: ModuleId): Option[Seq[Module]] =
+      map.getOrElseUpdate(
+        id,
+        dependencyMap(id)
+          .filter {
+            dep ⇒
+              filtered(dep.id).isDefined
+          } match {
+            case Seq() if !keep(id) ⇒
+              // none of this module's deps passed all rules (or depend on anything that does), nor did this module
+              // itself; drop it
+              None
+            case filteredDeps ⇒
+              // Keep this module and its valid deps (which may be empty
+              Some(filteredDeps)
+          })
+
+    dependencyMap foreach {
+      case (id, _) ⇒ filtered(id)
+    }
+
+    map
+      .flatMap {
+        case (id, Some(deps)) ⇒ Some(id → deps)
+        case _                ⇒ None
+      }
+      .toMap
+  }
 }
 
 object ModuleGraphProtocol extends ModuleGraphProtocolCompat {
@@ -73,5 +136,5 @@ object ModuleGraphProtocol extends ModuleGraphProtocolCompat {
   implicit def seqFormat[T: Format]: Format[Seq[T]] = wrap[Seq[T], List[T]](_.toList, _.toSeq)
   implicit val ModuleIdFormat: Format[ModuleId] = asProduct3(ModuleId)(ModuleId.unapply(_).get)
   implicit val ModuleFormat: Format[Module] = asProduct6(Module)(Module.unapply(_).get)
-  implicit val ModuleGraphFormat: Format[ModuleGraph] = asProduct2(ModuleGraph.apply _)(ModuleGraph.unapply(_).get)
+  implicit val ModuleGraphFormat: Format[ModuleGraph] = asProduct2(ModuleGraph.apply)(ModuleGraph.unapply(_).get)
 }

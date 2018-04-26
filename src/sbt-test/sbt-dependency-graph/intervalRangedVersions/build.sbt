@@ -6,9 +6,9 @@ libraryDependencies ++= Seq(
   "com.codahale" % "jerkson_2.9.1" % "0.5.0"
 )
 
-TaskKey[Unit]("check") := {
+InputKey[Unit]("check") := {
   val report = (ivyReport in Test).value
-  val graph = (asciiTree in Test).value
+  val graph = (asciiTree in Test).evaluated
 
   def sanitize(str: String): String = str.split('\n').drop(1).map(_.trim).mkString("\n")
   val expectedGraph =

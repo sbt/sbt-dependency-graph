@@ -17,6 +17,8 @@
 package net.virtualvoid.sbt.graph
 package rendering
 
+import net.virtualvoid.sbt.graph.model.{ Module, ModuleGraph }
+
 object FlatList {
   def render(graph: ModuleGraph, display: Module ⇒ String): String =
     graph.modules.values.toSeq

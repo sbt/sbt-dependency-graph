@@ -5,14 +5,13 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.0.7"
 )
 
-TaskKey[Unit]("check") := {
+InputKey[Unit]("check") := {
   val report = (ivyReport in Test).value
-  val graph = (asciiTree in Test).value
+  val graph = (asciiTree in Test).evaluated
   def sanitize(str: String): String = str.split('\n').drop(1).map(_.trim).mkString("\n")
   val expectedGraph =
     """default:default-e95e05_2.9.2:0.1-SNAPSHOT [S]
       |  +-ch.qos.logback:logback-classic:1.0.7
-      |  | +-ch.qos.logback:logback-core:1.0.7
       |  | +-org.slf4j:slf4j-api:1.6.6 (evicted by: 1.7.2)
       |  | +-org.slf4j:slf4j-api:1.7.2
       |  |
