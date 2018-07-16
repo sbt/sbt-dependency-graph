@@ -40,9 +40,10 @@ object Statistics {
       ModuleStats(moduleId, numDirectDependencies, numTransitiveDependencies, selfSize, transitiveSize, dependencyStats)
     }
 
+    def mb(bytes: Long): Double = bytes.toDouble / 1000000
+
     def format(stats: ModuleStats): String = {
       import stats._
-      def mb(bytes: Long): Double = bytes.toDouble / 1000000
       val selfSize =
         stats.selfSize match {
           case Some(size) ⇒ f"${mb(size)}%7.3f"
@@ -58,7 +59,11 @@ object Statistics {
     val header = "   TotSize    JarSize #TDe #Dep Module\n"
 
     header +
-      allStats.map(format).mkString("\n") +
+      allStats.map(format).mkString("\n") + "\n" +
+      f"${mb(allStats.map(_.transitiveSize).sum)}%7.3f MB " +
+      f"${mb(allStats.map(_.selfSize.getOrElse(0L)).sum)}%7.3f MB " +
+      f"${allStats.map(_.numTransitiveDependencies).sum}%4d " +
+      f"${allStats.map(_.numDirectDependencies).sum}%4d <- Cumulative Sizes" +
       """
         |
         |Columns are
