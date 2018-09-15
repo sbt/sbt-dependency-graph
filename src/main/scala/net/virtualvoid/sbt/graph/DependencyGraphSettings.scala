@@ -37,8 +37,18 @@ object DependencyGraphSettings {
 
   def baseSettings = Seq(
     ivyReportFunction := ivyReportFunctionTask.value,
-    updateConfiguration in ignoreMissingUpdate := updateConfiguration.value.withMissingOk(true),
 
+    // create our own version of `update` that will
+    //  * not fail on missing artifacts
+    //  * not actually download any jar files but only poms
+    updateConfiguration in ignoreMissingUpdate := updateConfiguration.value.withMissingOk(true),
+    moduleSettings in ignoreMissingUpdate := {
+      moduleSettings.value match {
+        case i: InlineConfiguration ⇒ i.withDependencies(i.dependencies.map(_.pomOnly()).toVector)
+        case x                      ⇒ x
+      }
+    },
+    ivyModule in ignoreMissingUpdate := { val is = ivySbt.value; new is.Module((moduleSettings in ignoreMissingUpdate).value) },
     ignoreMissingUpdate :=
       // inTask will make sure the new definition will pick up `updateConfiguration in ignoreMissingUpdate`
       SbtAccess.inTask(ignoreMissingUpdate, Classpaths.updateTask).value,

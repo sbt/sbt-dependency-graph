@@ -11,5 +11,10 @@ object DependencyGraphSbtCompat {
       def withMissingOk(missingOk: Boolean): UpdateConfiguration =
         updateConfig.copy(missingOk = missingOk)
     }
+
+    implicit class RichInlineConfiguration(val i: InlineConfiguration) extends AnyVal {
+      def withDependencies(newDependencies: Vector[ModuleID]): InlineConfiguration =
+        i.copy(dependencies = newDependencies)
+    }
   }
 }
