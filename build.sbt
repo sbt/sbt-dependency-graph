@@ -38,9 +38,9 @@ paradoxMaterialTheme in Compile := {
     // choose from https://jonas.github.io/paradox-material-theme/getting-started.html#changing-the-color-palette
     .withColor("light-green", "amber")
     // choose from https://jonas.github.io/paradox-material-theme/getting-started.html#adding-a-logo
-    .withLogoIcon("cloud")
+    .withLogoIcon("layers")
     .withCopyright("Copyleft © Johannes Rudolph")
-    .withRepository(uri("https://github.com/jrudolph/xyz"))
+    .withRepository(uri("https://github.com/jrudolph/sbt-dependency-graph"))
     .withSocial(
       uri("https://github.com/jrudolph"),
       uri("https://twitter.com/virtualvoid")
@@ -48,5 +48,7 @@ paradoxMaterialTheme in Compile := {
 }
 
 paradoxProperties ++= Map(
-  "github.base_url" -> (paradoxMaterialTheme in Compile).value.properties.getOrElse("repo", "")
+  "github.base_url" -> (paradoxMaterialTheme in Compile).value.properties.getOrElse("repo", ""),
+  "project.organization" -> organization.value,
+  "project.github_organization" -> "jrudolph"
 )
