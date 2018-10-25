@@ -21,6 +21,7 @@ import java.io.File
 import sbinary.Format
 
 import scala.collection.mutable.{ HashMap, MultiMap, Set }
+import scala.collection.immutable
 
 case class ModuleId(
   organisation: String,
@@ -76,4 +77,23 @@ object ModuleGraphProtocol extends ModuleGraphProtocolCompat {
   implicit val ModuleIdFormat: Format[ModuleId] = asProduct3(ModuleId)(ModuleId.unapply(_).get)
   implicit val ModuleFormat: Format[Module] = asProduct6(Module)(Module.unapply(_).get)
   implicit val ModuleGraphFormat: Format[ModuleGraph] = asProduct2(ModuleGraph.apply _)(ModuleGraph.unapply(_).get)
+}
+
+case class ModuleTreeNode(node: Module, children: immutable.Seq[ModuleTreeNode])
+
+object ModuleTreeNode {
+  def apply(module: Module, deps: Map[ModuleId, Seq[Module]]): ModuleTreeNode = {
+    val children = deps.getOrElse(module.id, immutable.Seq.empty[Module]).map(m ⇒ apply(m, deps)).toList
+    ModuleTreeNode(module, children)
+  }
+}
+
+case class ModuleTree(roots: immutable.Seq[ModuleTreeNode])
+
+object ModuleTree {
+  def apply(graph: ModuleGraph): ModuleTree = {
+    val deps = graph.dependencyMap
+    ModuleTree(graph.roots.toList.map { root ⇒ ModuleTreeNode(root, deps) })
+  }
+
 }
