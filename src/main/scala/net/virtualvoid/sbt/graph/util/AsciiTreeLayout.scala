@@ -17,7 +17,7 @@ object AsciiTreeLayout {
     top:       A,
     children:  A ⇒ Seq[A],
     display:   A ⇒ String,
-    maxColumn: Int        = defaultColumnSize): String = {
+    maxColumn: Int): String = {
     val twoSpaces = " " + " " // prevent accidentally being converted into a tab
     def limitLine(s: String): String =
       if (s.length > maxColumn) s.slice(0, maxColumn - 2) + ".."
@@ -52,11 +52,5 @@ object AsciiTreeLayout {
       }
 
     toAsciiLines(top, 0, Set.empty).mkString("\n")
-  }
-
-  def defaultColumnSize: Int = {
-    val termWidth = SbtAccess.getTerminalWidth
-    if (termWidth > 20) termWidth - 8
-    else 80 // ignore termWidth
   }
 }

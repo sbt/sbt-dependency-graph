@@ -72,7 +72,7 @@ class AsciiTreeLayoutSpecs extends Specification {
         4 -> Seq(3),
         5 -> Seq(1, 4, 6, 7),
         6 -> Seq(),
-        7 -> Seq()), _.toString).trim ===
+        7 -> Seq()), _.toString, 80).trim ===
         """1
           |  +-2
           |  | +-4
