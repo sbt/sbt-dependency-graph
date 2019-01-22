@@ -19,6 +19,7 @@ package rendering
 
 import com.github.mdr.ascii.layout._
 import net.virtualvoid.sbt.graph.DependencyGraphKeys._
+import sbt.dependencygraph.DependencyGraphSbtCompat.Settings.asciiGraphMaxColumnWidth
 import sbt.Keys._
 
 object AsciiGraph {
@@ -42,6 +43,7 @@ object AsciiGraph {
     DependencyGraphKeys.asciiGraph := asciiGraph(moduleGraph.value),
     dependencyGraph := {
       val force = DependencyGraphSettings.shouldForceParser.parsed
+      val columnWidth = asciiGraphMaxColumnWidth.value
       val log = streams.value.log
       if (force || moduleGraph.value.nodes.size < 15) {
         log.info(rendering.AsciiGraph.asciiGraph(moduleGraph.value))
@@ -49,7 +51,7 @@ object AsciiGraph {
         log.info("Note: The old tree layout is still available by using `dependency-tree`")
       }
 
-      log.info(rendering.AsciiTree.asciiTree(moduleGraph.value))
+      log.info(rendering.AsciiTree.asciiTree(moduleGraph.value, columnWidth))
 
       if (!force) {
         log.info("\n")
