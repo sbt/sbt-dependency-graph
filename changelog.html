@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="description" content="sbt-dependency-graph">
+<meta name="generator" content="Paradox, paradox-material-theme=0.4.0, mkdocs-material=2.2.2">
+
+<meta name="lang:clipboard.copy" content="Copy to clipboard">
+<meta name="lang:clipboard.copied" content="Copied to clipboard">
+<meta name="lang:search.result.none" content="No matching documents">
+<meta name="lang:search.result.one" content="1 matching document">
+<meta name="lang:search.result.other" content="# matching documents">
+<meta name="lang:search.language" content="">
+<meta name="lang:search.tokenizer" content="[\s\-]+">
+
+
+<meta name="description" content="sbt-dependency-graph">
+<link rel="shortcut icon" href="assets/images/favicon.png">
+<title>Changelog · sbt-dependency-graph</title>
+<link rel="stylesheet" href="assets/stylesheets/application.7a4cdee3.css">
+<link rel="stylesheet" href="assets/stylesheets/application-palette.792431c1.css">
+<link rel="stylesheet" href="lib/material__tabs/dist/mdc.tabs.min.css">
+<link rel="stylesheet" href="lib/prettify/prettify.css">
+<script src="lib/modernizr/modernizr.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+<style>
+body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}
+code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="assets/stylesheets/paradox-material-theme.css">
+</head>
+<body
+data-md-color-primary="light-green"
+data-md-color-accent="amber"
+>
+<input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+<input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+<label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+<header class="md-header" data-md-component="header">
+<nav class="md-header-nav md-grid">
+<div class="md-flex">
+<div class="md-flex__cell md-flex__cell--shrink">
+<a href="index.html" title="sbt-dependency-graph" class="md-header-nav__button md-logo">
+<i class="md-icon">layers</i>
+</a>
+</div>
+<div class="md-flex__cell md-flex__cell--shrink">
+<label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+</div>
+<div class="md-flex__cell md-flex__cell--stretch">
+<div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+<span class="md-header-nav__topic">
+sbt-dependency-graph
+</span>
+<span class="md-header-nav__topic">
+Changelog
+</span>
+</div>
+</div>
+<div class="md-flex__cell md-flex__cell--shrink">
+<label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="search"></label>
+<div class="md-search__inner">
+<form class="md-search__form" name="search">
+<input type="text" class="md-search__input" name="query" required placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+<label class="md-icon md-search__icon" for="search"></label>
+<button type="reset" class="md-icon md-search__icon" data-md-component="reset">&#xE5CD;</button>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix>
+<div class="md-search-result" data-md-component="result">
+<div class="md-search-result__meta">
+Type to start searching
+</div>
+<ol class="md-search-result__list"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<div class="md-flex__cell md-flex__cell--shrink">
+<div class="md-header-nav__source">
+<a href="https://github.com/jrudolph/sbt-dependency-graph"
+title="Go to repository"
+class="md-source"
+data-md-source="github">
+<div class="md-source__icon">
+<i class="fa fa-github"></i>
+</div>
+<div class="md-source__repository">
+jrudolph/sbt-dependency-graph
+</div>
+</a>
+
+</div>
+</div>
+</div>
+</nav>
+</header>
+
+<div class="md-container">
+<main class="md-main">
+<div class="md-main__inner md-grid" data-md-component="container">
+<div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav class="md-nav md-nav--primary" data-md-level="0" style="visibility: hidden">
+<label class="md-nav__title md-nav__title--site" for="drawer">
+<span class="md-nav__button md-logo">
+<i class="md-icon">layers</i>
+</span>
+<a href="index.html" title="sbt-dependency-graph">
+sbt-dependency-graph
+</a>
+</label>
+<div class="md-nav__source">
+<a href="https://github.com/jrudolph/sbt-dependency-graph"
+title="Go to repository"
+class="md-source"
+data-md-source="github">
+<div class="md-source__icon">
+<i class="fa fa-github"></i>
+</div>
+<div class="md-source__repository">
+jrudolph/sbt-dependency-graph
+</div>
+</a>
+
+</div>
+<ul>
+  <li><a href="configuration.html" class="page">Usage and Configuration</a></li>
+  <li><a href="tasks/index.html" class="page">Tasks</a>
+  <ul>
+    <li><a href="tasks/dependencyBrowseGraph.html" class="page">dependencyBrowseGraph</a></li>
+    <li><a href="tasks/dependencyTree.html" class="page">dependencyTree</a></li>
+    <li><a href="tasks/dependencyBrowseTree.html" class="page">dependencyBrowseTree</a></li>
+    <li><a href="tasks/dependencyList.html" class="page">dependencyList</a></li>
+    <li><a href="tasks/dependencyStats.html" class="page">dependencyStats</a></li>
+    <li><a href="tasks/dependencyLicenseInfo.html" class="page">dependencyLicenseInfo</a></li>
+    <li><a href="tasks/dependencyDot.html" class="page">dependencyDot</a></li>
+    <li><a href="tasks/dependencyGraphML.html" class="page">dependencyGraphML</a></li>
+    <li><a href="tasks/whatDependsOn.html" class="page">whatDependsOn</a></li>
+    <li><a href="tasks/deprecated-tasks.html" class="page">Deprecated Tasks</a></li>
+  </ul></li>
+  <li><a href="changelog.html" class="active page">Changelog</a></li>
+  <li><a href="license.html" class="page">License</a></li>
+</ul>
+<nav class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="toc">Table of contents</label>
+<ul>
+  <li><a href="changelog.html#changelog" class="header">Changelog</a>
+  <ul>
+    <li><a href="changelog.html#version-0-10-0-unreleased-" class="header">Version 0.10.0 (unreleased)</a></li>
+    <li><a href="changelog.html#version-0-9-2-2018-08-26-" class="header">Version 0.9.2 (2018-08-26)</a></li>
+    <li><a href="changelog.html#version-0-9-1-2018-07-17-" class="header">Version 0.9.1 (2018-07-17)</a></li>
+    <li><a href="changelog.html#version-0-9-0-2017-10-25-" class="header">Version 0.9.0 (2017-10-25)</a></li>
+    <li><a href="changelog.html#version-0-8-2-2016-02-01-" class="header">Version 0.8.2 (2016-02-01)</a></li>
+    <li><a href="changelog.html#version-0-8-1-2016-01-08-" class="header">Version 0.8.1 (2016-01-08)</a></li>
+    <li><a href="changelog.html#version-0-8-0-2015-11-26-" class="header">Version 0.8.0 (2015-11-26)</a></li>
+    <li><a href="changelog.html#version-0-7-5-2015-03-30-" class="header">Version 0.7.5 (2015-03-30)</a></li>
+    <li><a href="changelog.html#version-0-7-4-2013-06-26-" class="header">Version 0.7.4 (2013-06-26)</a></li>
+    <li><a href="changelog.html#version-0-7-3-2013-04-28-" class="header">Version 0.7.3 (2013-04-28)</a></li>
+    <li><a href="changelog.html#version-0-7-2-2013-03-02-" class="header">Version 0.7.2 (2013-03-02)</a></li>
+    <li><a href="changelog.html#version-0-7-1-2013-01-25-" class="header">Version 0.7.1 (2013-01-25)</a></li>
+    <li><a href="changelog.html#version-0-7-0-2012-10-24-" class="header">Version 0.7.0 (2012-10-24)</a></li>
+    <li><a href="changelog.html#version-0-6-0-2012-05-23-" class="header">Version 0.6.0 (2012-05-23)</a></li>
+    <li><a href="changelog.html#version-0-5-2-2012-02-13-" class="header">Version 0.5.2 (2012-02-13)</a></li>
+    <li><a href="changelog.html#version-0-5-1-2011-11-18-" class="header">Version 0.5.1 (2011-11-18)</a></li>
+    <li><a href="changelog.html#version-0-5-2011-11-15-" class="header">Version 0.5 (2011-11-15)</a></li>
+  </ul></li>
+</ul>
+</nav>
+
+<div class="md-nav__title--site md-version" title="Version">
+<i class="md-icon">label_outline</i> 0.9.2+13-313b6da7+20190224-1606
+</div>
+</nav>
+
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="toc">Table of contents</label>
+<ul>
+  <li><a href="changelog.html#changelog" class="header">Changelog</a>
+  <ul>
+    <li><a href="changelog.html#version-0-10-0-unreleased-" class="header">Version 0.10.0 (unreleased)</a></li>
+    <li><a href="changelog.html#version-0-9-2-2018-08-26-" class="header">Version 0.9.2 (2018-08-26)</a></li>
+    <li><a href="changelog.html#version-0-9-1-2018-07-17-" class="header">Version 0.9.1 (2018-07-17)</a></li>
+    <li><a href="changelog.html#version-0-9-0-2017-10-25-" class="header">Version 0.9.0 (2017-10-25)</a></li>
+    <li><a href="changelog.html#version-0-8-2-2016-02-01-" class="header">Version 0.8.2 (2016-02-01)</a></li>
+    <li><a href="changelog.html#version-0-8-1-2016-01-08-" class="header">Version 0.8.1 (2016-01-08)</a></li>
+    <li><a href="changelog.html#version-0-8-0-2015-11-26-" class="header">Version 0.8.0 (2015-11-26)</a></li>
+    <li><a href="changelog.html#version-0-7-5-2015-03-30-" class="header">Version 0.7.5 (2015-03-30)</a></li>
+    <li><a href="changelog.html#version-0-7-4-2013-06-26-" class="header">Version 0.7.4 (2013-06-26)</a></li>
+    <li><a href="changelog.html#version-0-7-3-2013-04-28-" class="header">Version 0.7.3 (2013-04-28)</a></li>
+    <li><a href="changelog.html#version-0-7-2-2013-03-02-" class="header">Version 0.7.2 (2013-03-02)</a></li>
+    <li><a href="changelog.html#version-0-7-1-2013-01-25-" class="header">Version 0.7.1 (2013-01-25)</a></li>
+    <li><a href="changelog.html#version-0-7-0-2012-10-24-" class="header">Version 0.7.0 (2012-10-24)</a></li>
+    <li><a href="changelog.html#version-0-6-0-2012-05-23-" class="header">Version 0.6.0 (2012-05-23)</a></li>
+    <li><a href="changelog.html#version-0-5-2-2012-02-13-" class="header">Version 0.5.2 (2012-02-13)</a></li>
+    <li><a href="changelog.html#version-0-5-1-2011-11-18-" class="header">Version 0.5.1 (2011-11-18)</a></li>
+    <li><a href="changelog.html#version-0-5-2011-11-15-" class="header">Version 0.5 (2011-11-15)</a></li>
+  </ul></li>
+</ul>
+</nav>
+
+</div>
+</div>
+</div>
+<div class="md-content">
+<article class="md-content__inner md-typeset">
+<div class="md-content__searchable">
+<h1><a href="#changelog" name="changelog" class="anchor"><span class="anchor-link"></span></a>Changelog</h1>
+<h2><a href="#version-0-10-0-unreleased-" name="version-0-10-0-unreleased-" class="anchor"><span class="anchor-link"></span></a>Version 0.10.0 (unreleased)</h2>
+<ul>
+  <li><a href="https://github.com/jrudolph/sbt-dependency-graph/pull/136">#136</a>: Added <code>dependencyBrowseTree</code> to open a searchable dependency tree in the browser.  Thanks, <a href="https://github.com/pcejrowski">@pcejrowski</a> for contributing this feature.</li>
+</ul>
+<h2><a href="#version-0-9-2-2018-08-26-" name="version-0-9-2-2018-08-26-" class="anchor"><span class="anchor-link"></span></a>Version 0.9.2 (2018-08-26)</h2>
+<ul>
+  <li><a href="https://github.com/jrudolph/sbt-dependency-graph/pull/159">#159</a>: Fixed regression in <code>whatDependsOn</code> where task parser failed when no other sbt-dependency-graph task was called before</li>
+</ul>
+<h2><a href="#version-0-9-1-2018-07-17-" name="version-0-9-1-2018-07-17-" class="anchor"><span class="anchor-link"></span></a>Version 0.9.1 (2018-07-17)</h2>
+<ul>
+  <li><a href="https://github.com/jrudolph/sbt-dependency-graph/issues/110">#110</a>: <code>whatDependsOn</code> can now be called without specifying a version. Thanks, @chikei for the initial implementation.</li>
+  <li><a href="https://github.com/jrudolph/sbt-dependency-graph/issues/150">#150</a>: <code>ivyReport</code> now reports correct path again even for older sbt versions (&lt; 0.13.16)</li>
+</ul>
+<h2><a href="#version-0-9-0-2017-10-25-" name="version-0-9-0-2017-10-25-" class="anchor"><span class="anchor-link"></span></a>Version 0.9.0 (2017-10-25)</h2>
+<p>This version (finally!) adds support for sbt 1.0. <em>sbt-dependency-graph</em> depends on a lot of internals from sbt to do its work which is why it was quite an effort to do the migration. Thanks <a href="https://github.com/MasseGuillaume">@MasseGuillaume</a> from Scala Center, <a href="https://github.com/2m">@2m</a>, and <a href="https://github.com/xuwei-k">@xuwei-k</a> for helping out with the effort.</p>
+<p>The plugin is cross-built for sbt 0.13 (and will continued to be for while). The <code>dependencyGraph</code> task is currently not supported on sbt 1.0. Use <code>dependencyBrowseGraph</code>, instead.</p>
+<h2><a href="#version-0-8-2-2016-02-01-" name="version-0-8-2-2016-02-01-" class="anchor"><span class="anchor-link"></span></a>Version 0.8.2 (2016-02-01)</h2>
+<p>This is a maintenance release <a href="https://github.com/jrudolph/sbt-dependency-graph/issues/89">fixing</a> <code>dependencyBrowseGraph</code> in the latest Chrome versions. Thanks <a href="https://github.com/chtefi">@chtefi</a>!</p>
+<h2><a href="#version-0-8-1-2016-01-08-" name="version-0-8-1-2016-01-08-" class="anchor"><span class="anchor-link"></span></a>Version 0.8.1 (2016-01-08)</h2>
+<p>This is a maintenance release fixing a regression in 0.8.0 and adding two small features.</p>
+<p>All changes:</p>
+<ul>
+  <li><a href="https://github.com/jrudolph/sbt-dependency-graph/issues/84">#84</a>: Fix regression of DOT label rendering introduced in 0.8.0.</li>
+  <li><a href="https://github.com/jrudolph/sbt-dependency-graph/issues/83">#83</a>: Added new task <code>dependencyStats</code> which prints a  simple table of jar sizes for all your dependencies. Handy if you want to know why your assembled jar gets so big.</li>
+  <li><a href="https://github.com/jrudolph/sbt-dependency-graph/issues/85">#85</a>: Added new task <code>dependencyList</code> which prints a  flat, deduplicated list of all the transitive dependencies.</li>
+</ul>
+<h2><a href="#version-0-8-0-2015-11-26-" name="version-0-8-0-2015-11-26-" class="anchor"><span class="anchor-link"></span></a>Version 0.8.0 (2015-11-26)</h2>
+<p>sbt-dependency-graph is finally an AutoPlugin and can now show the dependency graph in the browser directly.</p>
+<h3><a href="#new-features" name="new-features" class="anchor"><span class="anchor-link"></span></a>New features</h3>
+<ul>
+  <li>
+  <p>(experimental) open dependency graph directly in the browser with <code>dependencyBrowseGraph</code> (<a href="https://github.com/jrudolph/sbt-dependency-graph/issues/29">#29</a>)  <img src="https://gist.githubusercontent.com/jrudolph/941754bcf67a0fafe495/raw/7d80d766feb7af6ba2a69494e1f3ceb1fd40d4da/Screenshot%2520from%25202015-11-26%252014:18:19.png" alt="dependencyBrowseGraph in action" /></p></li>
+  <li>
+  <p>this plugin is finally an sbt AutoPlugin and it is automatically enabled  (<a href="https://github.com/jrudolph/sbt-dependency-graph/issues/51">#51</a>)</p></li>
+</ul>
+<p><strong>Note: To update from 0.7.x remove the <code>net.virtualvoid.sbt.graph.Plugin.graphSettings</code> line from your configurations.</strong></p>
+<h3><a href="#other-changes" name="other-changes" class="anchor"><span class="anchor-link"></span></a>Other changes</h3>
+<ul>
+  <li>a new backend was implemented which accesses the in-memory dependency data structures of sbt directly. The plugin doesn&rsquo;t  require accessing the ivy report XML any more (the old backend can still be wired in for comparisons if needed) which  should have solved the race condition and the dreaded <code>FileNotFoundException</code> (<a href="https://github.com/jrudolph/sbt-dependency-graph/issues/39">#39</a>)  in multi-module projects. The new backend is only used for sbt &gt;= 0.13.6.</li>
+  <li>code was restructured which touched a lot of the classes but didn&rsquo;t change the function or syntax of settings and tasks.</li>
+  <li>fixed <a href="https://github.com/jrudolph/sbt-dependency-graph/issues/77">#77</a></li>
+</ul>
+<h2><a href="#version-0-7-5-2015-03-30-" name="version-0-7-5-2015-03-30-" class="anchor"><span class="anchor-link"></span></a>Version 0.7.5 (2015-03-30)</h2>
+<p>This is a maintenance release adding support for sbt 0.13.8.</p>
+<p>All changes:</p>
+<ul>
+  <li><a href="https://github.com/jrudolph/sbt-dependency-graph/issues/67">#67</a>: Added support for sbt 0.13.8. Thanks  <a href="https://github.com/eed3si9n">@eed3si9n</a> for the fix.</li>
+  <li><a href="https://github.com/jrudolph/sbt-dependency-graph/issues/37">#37</a>: Don&rsquo;t fail with StringIndexOutOfBoundsException  for deep trees.</li>
+  <li><a href="https://github.com/jrudolph/sbt-dependency-graph/issues/44">#44</a>: Only match scala lib by org/name.  Thanks <a href="https://github.com/2beaucoup">@2beaucoup</a> for the fix.</li>
+</ul>
+<h2><a href="#version-0-7-4-2013-06-26-" name="version-0-7-4-2013-06-26-" class="anchor"><span class="anchor-link"></span></a>Version 0.7.4 (2013-06-26)</h2>
+<p>This is a maintenance release fixing an exception when generating graphs without a terminal <a href="https://github.com/jrudolph/sbt-dependency-graph/issues/32">#32</a>.</p>
+<h2><a href="#version-0-7-3-2013-04-28-" name="version-0-7-3-2013-04-28-" class="anchor"><span class="anchor-link"></span></a>Version 0.7.3 (2013-04-28)</h2>
+<p>This is a maintenance release. Following issues have been fixed:</p>
+<ul>
+  <li><a href="https://github.com/jrudolph/sbt-dependency-graph/issues/27">#27</a>: A dependency configured with a version range was not properly associated with its dependant.</li>
+  <li><a href="https://github.com/jrudolph/sbt-dependency-graph/issues/30">#30</a> &amp; <a href="https://github.com/jrudolph/sbt-dependency-graph/issues/31">#31</a>: Make it work again with sbt 0.12.3. The path of the dependency resolution file changed in sbt 0.12.3. Thanks <a href="https://github.com/ebowman">ebowman</a> for the fix.</li>
+</ul>
+<h2><a href="#version-0-7-2-2013-03-02-" name="version-0-7-2-2013-03-02-" class="anchor"><span class="anchor-link"></span></a>Version 0.7.2 (2013-03-02)</h2>
+<p>This is a maintenance release. Following issues have been fixed:</p>
+<ul>
+  <li><a href="https://github.com/jrudolph/sbt-dependency-graph/issues/27">#27</a>: A dependency configured with a version range was not properly associated with its dependant.</li>
+</ul>
+<h2><a href="#version-0-7-1-2013-01-25-" name="version-0-7-1-2013-01-25-" class="anchor"><span class="anchor-link"></span></a>Version 0.7.1 (2013-01-25)</h2>
+<p>New features in this version:</p>
+<ul>
+  <li><code>dependency-license-info</code>: show dependencies grouped by declared license</li>
+  <li><code>dependency-dot</code>: create dot file from dependency graph. Contributed by <a href="https://github.com/berleon">berleon</a>.</li>
+</ul>
+<h2><a href="#version-0-7-0-2012-10-24-" name="version-0-7-0-2012-10-24-" class="anchor"><span class="anchor-link"></span></a>Version 0.7.0 (2012-10-24)</h2>
+<p>New features in this version:</p>
+<ul>
+  <li><code>dependency-graph</code> now renders a real graph. Thanks go to <a href="https://github.com/mdr/">Matt Russell</a> for this added awesomeness.</li>
+  <li>The tree output from previous versions is now available with <code>dependency-tree</code>.</li>
+  <li>New task <code>what-depends-on</code> showing reverse dependency tree for a selected module (incl. tab-completion for modules)</li>
+  <li>Don&rsquo;t fail in cases of a missing dependency. Show errors directly in the output.</li>
+  <li>Show info about evicted versions.</li>
+  <li>By default, exclude scala-library dependency and append <code>[S]</code> to the artifact name instead. Set <code>filter-scala-library</code> to <code>false</code> to disable this feature.</li>
+  <li>Works with sbt 0.12.1. The ivy report files were moved to a new location making an update necessary.</li>
+</ul>
+<h2><a href="#version-0-6-0-2012-05-23-" name="version-0-6-0-2012-05-23-" class="anchor"><span class="anchor-link"></span></a>Version 0.6.0 (2012-05-23)</h2>
+<p>New features in this version:</p>
+<ul>
+  <li><code>dependency-graph</code> task now prints the dependency graph to the console (contributed by @gseitz)</li>
+  <li><code>dependency-graph-ml</code> contains now the old functionality of <code>dependency-graph</code> which generates a <code>.graphml</code> file. Nodes now contain the dependency version as well (contributed by @gseitz).</li>
+  <li>The output filename of <code>dependency-graph-ml</code> has been changed to include the configuration name. It is now configurable using the <code>dependency-graph-ml-file</code> setting.</li>
+  <li>The common <code>scalaVersion in update</code> idiom to support Scala 2.9.1 libraries in a Scala 2.9.2 broke the plugin in 0.5.2, because it wouldn&rsquo;t find the ivy report xml file any more. This was fixed.</li>
+  <li>All tasks are scoped by configuration.</li>
+</ul>
+<h2><a href="#version-0-5-2-2012-02-13-" name="version-0-5-2-2012-02-13-" class="anchor"><span class="anchor-link"></span></a>Version 0.5.2 (2012-02-13)</h2>
+<h2><a href="#version-0-5-1-2011-11-18-" name="version-0-5-1-2011-11-18-" class="anchor"><span class="anchor-link"></span></a>Version 0.5.1 (2011-11-18)</h2>
+<h2><a href="#version-0-5-2011-11-15-" name="version-0-5-2011-11-15-" class="anchor"><span class="anchor-link"></span></a>Version 0.5 (2011-11-15)</h2>
+</div>
+<div>
+<a href="https://github.com/jrudolph/sbt-dependency-graph/tree/master/src/main/paradox/changelog.md" title="Edit this page" class="md-source-file md-edit">
+Edit this page
+</a>
+</div>
+<div class="print-only">
+<span class="md-source-file md-version">
+0.9.2+13-313b6da7+20190224-1606
+</span>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer class="md-footer">
+<div class="md-footer-nav">
+<nav class="md-footer-nav__inner md-grid">
+<a href="tasks/deprecated-tasks.html" title="Deprecated Tasks" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+<div class="md-flex__cell md-flex__cell--shrink">
+<i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+</div>
+<div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+<span class="md-flex__ellipsis">
+<span class="md-footer-nav__direction">
+Previous
+</span>
+Deprecated Tasks
+</span>
+</div>
+</a>
+<a href="license.html" title="License" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+<div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+<span class="md-flex__ellipsis">
+<span class="md-footer-nav__direction">
+Next
+</span>
+License
+</span>
+</div>
+<div class="md-flex__cell md-flex__cell--shrink">
+<i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+</div>
+</a>
+</nav>
+</div>
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-footer-copyright">
+<div class="md-footer-copyright__highlight">
+Copyleft © Johannes Rudolph
+</div>
+Powered by
+<a href="https://github.com/lightbend/paradox">Paradox</a>
+and
+<a href="https://jonas.github.io/paradox-material-theme/">Paradox Material Theme</a>
+
+</div>
+<div class="md-footer-social">
+<a href="https://github.com/jrudolph" class="md-footer-social__link fa fa-github"></a><a href="https://twitter.com/virtualvoid" class="md-footer-social__link fa fa-twitter"></a>
+</div>
+
+</div>
+</div>
+</footer>
+
+</div>
+<script src="assets/javascripts/application.5165553b.js"></script>
+<script src="assets/javascripts/paradox-material-theme.js"></script>
+<script>app.initialize({version:"0.17",url:{base:"."}})</script>
+<script type="text/javascript" src="lib/prettify/prettify.js"></script>
+<script type="text/javascript" src="lib/prettify/lang-scala.js"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(event) {
+window.prettyPrint && prettyPrint();
+});
+</script>
+</body>
+</html>
