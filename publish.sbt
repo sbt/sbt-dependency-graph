@@ -14,8 +14,8 @@ pomIncludeRepository := { _ => false }
 
 scmInfo := Some(
   ScmInfo(
-    browseUrl = url("https://github.com/jrudolph/sbt-dependency-graph"),
-    connection = "scm:git:git@github.com:jrudolph/sbt-dependency-graph.git"
+    browseUrl = url("https://github.com/yamory/sbt-dependency-graph"),
+    connection = "scm:git@github.com:yamory/sbt-dependency-graph.git"
   )
 )
 
@@ -27,5 +27,6 @@ developers := List(
     url("https://virtual-void.net")
   )
 )
+
 
 useGpg := true

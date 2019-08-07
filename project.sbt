@@ -2,8 +2,8 @@ sbtPlugin := true
 
 name := "sbt-dependency-graph"
 
-organization := "net.virtual-void"
+organization := "io.yamory"
 
-homepage := Some(url("http://github.com/jrudolph/sbt-dependency-graph"))
+homepage := Some(url("http://github.com/yamory/sbt-dependency-graph"))
 
-licenses in GlobalScope += "Apache License 2.0" -> url("https://github.com/jrudolph/sbt-dependency-graph/raw/master/LICENSE")
+licenses in GlobalScope += "Apache License 2.0" -> url("https://github.com/yamory/sbt-dependency-graph/raw/master/LICENSE")
