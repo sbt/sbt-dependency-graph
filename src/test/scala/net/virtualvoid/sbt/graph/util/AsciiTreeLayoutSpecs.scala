@@ -19,7 +19,7 @@ class AsciiTreeLayoutSpecs extends Specification {
   "Graph" should {
     "layout simple graphs" in {
       val simple = Branch(Branch(Leaf(1), Leaf(2)), Leaf(3))
-      AsciiTreeLayout.toAscii(simple, children, display, 20) ===
+      AsciiTreeLayout.toAscii(simple, children, display, false, 20) ===
         """Branch
           |  +-Branch
           |  | +-1
@@ -30,7 +30,7 @@ class AsciiTreeLayoutSpecs extends Specification {
     }
     "add separator lines where applicable" in {
       val simple = Branch(Branch(Leaf(1), Branch(Leaf(2), Leaf(3))), Leaf(4))
-      AsciiTreeLayout.toAscii(simple, children, display, 20) ===
+      AsciiTreeLayout.toAscii(simple, children, display, false, 20) ===
         """Branch
           |  +-Branch
           |  | +-1
@@ -43,7 +43,7 @@ class AsciiTreeLayoutSpecs extends Specification {
     }
     "layout deep graphs" in {
       val simple = Branch(Branch(Branch(Branch(Branch(Branch(Leaf(1), Leaf(1)), Leaf(1)), Leaf(1)), Leaf(2)), Leaf(3)), Leaf(4))
-      AsciiTreeLayout.toAscii(simple, children, display, 10) ===
+      AsciiTreeLayout.toAscii(simple, children, display, true, 10) ===
         """Branch
           |  +-Branch
           |  | +-Br..
@@ -72,7 +72,7 @@ class AsciiTreeLayoutSpecs extends Specification {
         4 -> Seq(3),
         5 -> Seq(1, 4, 6, 7),
         6 -> Seq(),
-        7 -> Seq()), _.toString).trim ===
+        7 -> Seq()), _.toString, false).trim ===
         """1
           |  +-2
           |  | +-4

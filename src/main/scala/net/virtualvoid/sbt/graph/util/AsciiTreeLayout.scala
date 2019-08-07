@@ -14,14 +14,16 @@ object AsciiTreeLayout {
   // [info]   |
   // [info]   +-quux
   def toAscii[A](
-    top:       A,
-    children:  A ⇒ Seq[A],
-    display:   A ⇒ String,
-    maxColumn: Int        = defaultColumnSize): String = {
+    top:           A,
+    children:      A ⇒ Seq[A],
+    display:       A ⇒ String,
+    truncateLines: Boolean,
+    maxColumn:     Int        = defaultColumnSize): String = {
     val twoSpaces = " " + " " // prevent accidentally being converted into a tab
     def limitLine(s: String): String =
-      if (s.length > maxColumn) s.slice(0, maxColumn - 2) + ".."
+      if (truncateLines && s.length > maxColumn) s.slice(0, maxColumn - 2) + ".."
       else s
+
     def insertBar(s: String, at: Int): String =
       if (at < s.length)
         s.slice(0, at) +

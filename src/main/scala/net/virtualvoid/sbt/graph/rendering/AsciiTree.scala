@@ -20,14 +20,19 @@ package rendering
 import util.AsciiTreeLayout
 import util.ConsoleUtils._
 
+import scala.util.Try
+
 object AsciiTree {
+  private val truncateLines =
+    Try(System.getProperty("sbt.graph.truncateLines").toBoolean).getOrElse(false)
+
   def asciiTree(graph: ModuleGraph): String = {
     val deps = graph.dependencyMap
 
     // there should only be one root node (the project itself)
     val roots = graph.roots
     roots.map { root ⇒
-      AsciiTreeLayout.toAscii[Module](root, node ⇒ deps.getOrElse(node.id, Seq.empty[Module]), displayModule)
+      AsciiTreeLayout.toAscii[Module](root, node ⇒ deps.getOrElse(node.id, Seq.empty[Module]), displayModule, truncateLines)
     }.mkString("\n")
   }
 
