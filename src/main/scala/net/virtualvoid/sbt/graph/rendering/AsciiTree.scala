@@ -24,7 +24,7 @@ import scala.util.Try
 
 object AsciiTree {
   private val truncateLines =
-    Try(System.getProperty("sbt.graph.truncateLines").toBoolean).getOrElse(false)
+    Try(System.getProperty("io.yamory.sbt.graph.truncateLines").toBoolean).getOrElse(false)
 
   def asciiTree(graph: ModuleGraph): String = {
     val deps = graph.dependencyMap
