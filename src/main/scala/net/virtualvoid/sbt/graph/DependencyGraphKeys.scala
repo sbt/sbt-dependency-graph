@@ -104,7 +104,7 @@ trait DependencyGraphKeys {
     "Aggregates and shows information about the licenses of dependencies")
 
   // internal
-  private[graph] val ignoreMissingUpdate = TaskKey[UpdateReport]("dependencyUpdate", "sbt-dependency-graph version of update")
+  private[graph] val dependencyUpdate = TaskKey[UpdateReport]("dependencyUpdate", "sbt-dependency-graph version of update")
   private[graph] val moduleGraphStore = TaskKey[ModuleGraph]("module-graph-store", "The stored module-graph from the last run")
   val whatDependsOn = InputKey[String]("what-depends-on", "Shows information about what depends on the given module")
   private[graph] val crossProjectId = SettingKey[ModuleID]("dependency-graph-cross-project-id")
