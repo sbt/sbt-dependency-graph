@@ -41,24 +41,24 @@ object DependencyGraphSettings {
     // disable the cached resolution engine (exposing a scoped `ivyModule` used directly by `updateTask`), as it
     // generates artificial module descriptors which are internal to sbt, making it hard to reconstruct the
     // dependency tree
-    updateOptions in dependencyUpdate := updateOptions.value.withCachedResolution(false),
-    ivyConfiguration in dependencyUpdate :=
-      // inTask will make sure the new definition will pick up `updateOptions in dependencyUpdate`
-      SbtAccess.inTask(dependencyUpdate, Classpaths.mkIvyConfiguration).value,
-    ivyModule in dependencyUpdate := {
+    updateOptions in ignoreMissingUpdate := updateOptions.value.withCachedResolution(false),
+    ivyConfiguration in ignoreMissingUpdate :=
+      // inTask will make sure the new definition will pick up `updateOptions in ignoreMissingUpdate`
+      SbtAccess.inTask(ignoreMissingUpdate, Classpaths.mkIvyConfiguration).value,
+    ivyModule in ignoreMissingUpdate := {
       // concatenating & inlining ivySbt & ivyModule default task implementations, as `SbtAccess.inTask` does
       // NOT correctly force the scope when applied to `TaskKey.toTask` instances (as opposed to raw
       // implementations like `Classpaths.mkIvyConfiguration` or `Classpaths.updateTask`)
-      val is = new IvySbt((ivyConfiguration in dependencyUpdate).value)
+      val is = new IvySbt((ivyConfiguration in ignoreMissingUpdate).value)
       new is.Module(moduleSettings.value)
     },
 
     // don't fail on missing dependencies
-    updateConfiguration in dependencyUpdate := updateConfiguration.value.withMissingOk(true),
+    updateConfiguration in ignoreMissingUpdate := updateConfiguration.value.withMissingOk(true),
 
-    dependencyUpdate :=
-      // inTask will make sure the new definition will pick up `ivyModule/updateConfiguration in dependencyUpdate`
-      SbtAccess.inTask(dependencyUpdate, Classpaths.updateTask).value,
+    ignoreMissingUpdate :=
+      // inTask will make sure the new definition will pick up `ivyModule/updateConfiguration in ignoreMissingUpdate`
+      SbtAccess.inTask(ignoreMissingUpdate, Classpaths.updateTask).value,
 
     filterScalaLibrary in Global := true)
 
@@ -74,10 +74,10 @@ object DependencyGraphSettings {
 
   def ivyReportForConfig(config: Configuration) = inConfig(config)(
     Seq(
-      ivyReport := { Def.task { ivyReportFunction.value.apply(config.toString) } dependsOn (dependencyUpdate) }.value,
+      ivyReport := { Def.task { ivyReportFunction.value.apply(config.toString) } dependsOn (ignoreMissingUpdate) }.value,
       crossProjectId := sbt.CrossVersion(scalaVersion.value, scalaBinaryVersion.value)(projectID.value),
       moduleGraphSbt :=
-        dependencyUpdate.value.configuration(configuration.value).map(report ⇒ SbtUpdateReport.fromConfigurationReport(report, crossProjectId.value)).getOrElse(ModuleGraph.empty),
+        ignoreMissingUpdate.value.configuration(configuration.value).map(report ⇒ SbtUpdateReport.fromConfigurationReport(report, crossProjectId.value)).getOrElse(ModuleGraph.empty),
       moduleGraphIvyReport := IvyReport.fromReportFile(absoluteReportPath(ivyReport.value)),
       moduleGraph := {
         sbtVersion.value match {
