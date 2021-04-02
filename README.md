@@ -4,6 +4,8 @@
 
 Visualize your project's dependencies.
 
+**DEPRECATED: This plugin has been replaced by built-in sbt plugin in sbt 1.4+, please replace your dependency on this plugin with the following statement `addDependencyTreePlugin`**
+
 **Note: Under sbt >= 1.3.x some features might currently not work as expected or not at all (like `dependencyLicenses`).**
 
 ## Usage Instructions
@@ -11,6 +13,14 @@ Visualize your project's dependencies.
 sbt-dependency-graph is an informational tool rather than one that changes your build, so you will more than likely wish to
 install it as a [global plugin] so that you can use it in any SBT project without the need to explicitly add it to each one. To do
 this, add the plugin dependency to `~/.sbt/0.13/plugins/plugins.sbt` for sbt 0.13 or `~/.sbt/1.0/plugins/plugins.sbt` for sbt 1.0:
+
+For sbt 1.4+ use:
+
+```scala
+addDependencyTreePlugin
+```
+
+For sbt < 1.3 use:
 
 ```scala
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1")
