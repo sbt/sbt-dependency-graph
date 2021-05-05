@@ -21,13 +21,13 @@ import util.AsciiTreeLayout
 import util.ConsoleUtils._
 
 object AsciiTree {
-  def asciiTree(graph: ModuleGraph): String = {
+  def asciiTree(graph: ModuleGraph, maxColumnWidth: Int): String = {
     val deps = graph.dependencyMap
 
     // there should only be one root node (the project itself)
     val roots = graph.roots
     roots.map { root ⇒
-      AsciiTreeLayout.toAscii[Module](root, node ⇒ deps.getOrElse(node.id, Seq.empty[Module]), displayModule)
+      AsciiTreeLayout.toAscii[Module](root, node ⇒ deps.getOrElse(node.id, Seq.empty[Module]), displayModule, maxColumnWidth)
     }.mkString("\n")
   }
 
