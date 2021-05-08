@@ -65,6 +65,9 @@ trait DependencyGraphKeys {
   val moduleGraph = TaskKey[ModuleGraph](
     "module-graph",
     "The dependency graph for a project")
+  val moduleTree = TaskKey[ModuleTree](
+    "module-tree",
+    "The dependency tree for a project")
   val moduleGraphIvyReport = TaskKey[ModuleGraph](
     "module-graph-ivy-report",
     "The dependency graph for a project as generated from an Ivy Report XML")

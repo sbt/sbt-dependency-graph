@@ -95,6 +95,8 @@ object DependencyGraphSettings {
       },
       moduleGraphStore := (moduleGraph storeAs moduleGraphStore triggeredBy moduleGraph).value,
 
+      moduleTree := ModuleTree(DependencyGraphKeys.moduleGraph.value),
+
       // browse
       dependencyBrowseGraphTarget := { target.value / "browse-dependency-graph" },
       dependencyBrowseGraphHTML := browseGraphHTMLTask.value,
