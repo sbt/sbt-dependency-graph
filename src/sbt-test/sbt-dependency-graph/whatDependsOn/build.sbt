@@ -12,7 +12,10 @@ libraryDependencies ++= Seq(
 val check = TaskKey[Unit]("check")
 
 check := {
-  def sanitize(str: String): String = str.split('\n').map(_.trim).mkString("\n")
+  def sanitize(str: String): String = {
+    def trimRight(s: String) = s.replaceAll("""\s*$""", "")
+    str.split('\n').map(trimRight).mkString("\n")
+  }
   def checkOutput(output: String, expected: String): Unit =
     require(sanitize(expected) == sanitize(output), s"Tree should have been [\n${sanitize(expected)}\n] but was [\n${sanitize(output)}\n]")
 
@@ -27,12 +30,21 @@ check := {
       |  |
       |  +-org.codehaus.jackson:jackson-mapper-asl:1.9.11
       |    +-com.codahale:jerkson_2.9.1:0.5.0 [S]
-      |    | +-default:whatdependson_2.9.1:0.1.0-SNAPSHOT [S]
-      |    |
-      |    +-default:whatdependson_2.9.1:0.1.0-SNAPSHOT [S]
+      |      +-default:whatdependson_2.9.1:0.1.0-SNAPSHOT [S]
       |  """.stripMargin
 
   checkOutput(withVersion, expectedGraphWithVersion)
+
+  val withEvictedVersion =
+    (whatDependsOn in Compile)
+      .toTask(" org.codehaus.jackson jackson-mapper-asl 1.9.10")
+      .value
+  val expectedGraphWithEvictedVersion =
+    """org.codehaus.jackson:jackson-mapper-asl:1.9.10 (evicted by: 1.9.11)
+      |  +-default:whatdependson_2.9.1:0.1.0-SNAPSHOT [S]
+      """.stripMargin
+
+  checkOutput(withEvictedVersion, expectedGraphWithEvictedVersion)
 
   val withoutVersion =
     (whatDependsOn in Compile)
@@ -40,13 +52,11 @@ check := {
       .value
   val expectedGraphWithoutVersion =
     """org.codehaus.jackson:jackson-mapper-asl:1.9.11
-      | +-com.codahale:jerkson_2.9.1:0.5.0 [S]
-      | | +-default:whatdependson_2.9.1:0.1.0-SNAPSHOT [S]
-      | |
-      | +-default:whatdependson_2.9.1:0.1.0-SNAPSHOT [S]
+      |  +-com.codahale:jerkson_2.9.1:0.5.0 [S]
+      |    +-default:whatdependson_2.9.1:0.1.0-SNAPSHOT [S]
       |
       |org.codehaus.jackson:jackson-mapper-asl:1.9.10 (evicted by: 1.9.11)
-      | +-default:whatdependson_2.9.1:0.1.0-SNAPSHOT [S]
+      |  +-default:whatdependson_2.9.1:0.1.0-SNAPSHOT [S]
       |   """.stripMargin
   checkOutput(withoutVersion, expectedGraphWithoutVersion)
 }

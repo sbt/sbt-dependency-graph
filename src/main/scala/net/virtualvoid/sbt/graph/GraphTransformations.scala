@@ -18,7 +18,7 @@ package net.virtualvoid.sbt.graph
 
 object GraphTransformations {
   def reverseGraphStartingAt(graph: ModuleGraph, root: ModuleId): ModuleGraph = {
-    val deps = graph.reverseDependencyMap
+    val deps = graph.reverseOriginalDependencyMap
 
     def visit(module: ModuleId, visited: Set[ModuleId]): Seq[(ModuleId, ModuleId)] =
       if (visited(module))

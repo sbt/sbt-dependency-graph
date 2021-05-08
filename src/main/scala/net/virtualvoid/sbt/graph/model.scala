@@ -51,14 +51,41 @@ case class ModuleGraph(nodes: Seq[Module], edges: Seq[Edge]) {
   def module(id: ModuleId): Module = modules(id)
 
   lazy val dependencyMap: Map[ModuleId, Seq[Module]] =
-    createMap(identity)
+    createMap(identity, onlyOriginalDependencies = false)
 
   lazy val reverseDependencyMap: Map[ModuleId, Seq[Module]] =
-    createMap { case (a, b) ⇒ (b, a) }
+    createMap(_.swap, onlyOriginalDependencies = false)
 
-  def createMap(bindingFor: ((ModuleId, ModuleId)) ⇒ (ModuleId, ModuleId)): Map[ModuleId, Seq[Module]] = {
+  lazy val reverseOriginalDependencyMap: Map[ModuleId, Seq[Module]] =
+    createMap(_.swap, onlyOriginalDependencies = true)
+
+  /**
+   * @param onlyOriginalDependencies Keep only dependency edges that are original,
+   *                               i.e. dependency relationships established due to evictions are ignored
+   */
+  def createMap(
+    bindingFor:               ((ModuleId, ModuleId)) ⇒ (ModuleId, ModuleId),
+    onlyOriginalDependencies: Boolean): Map[ModuleId, Seq[Module]] = {
     val m = new HashMap[ModuleId, Set[Module]] with MultiMap[ModuleId, Module]
-    edges.foreach { entry ⇒
+    val relevantEdges =
+      if (onlyOriginalDependencies) {
+        edges
+          .groupBy {
+            case (dependant, dependency) ⇒
+              (
+                dependant.organisation,
+                dependant.name,
+                dependency.organisation,
+                dependency.name)
+          }
+          .mapValues { edgeGroup ⇒
+            edgeGroup.find { case (_, dependency) ⇒ module(dependency).isEvicted }
+              .getOrElse(edgeGroup.head)
+          }
+          .values
+          .toSeq
+      } else edges
+    relevantEdges.foreach { entry ⇒
       val (f, t) = bindingFor(entry)
       m.addBinding(f, module(t))
     }
