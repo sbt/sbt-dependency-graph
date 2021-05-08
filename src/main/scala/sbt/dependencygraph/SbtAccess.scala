@@ -23,7 +23,9 @@ import Def._
 object SbtAccess {
   val unmanagedScalaInstanceOnly = Defaults.unmanagedScalaInstanceOnly
 
-  def getTerminalWidth: Int = sbt.internal.util.JLine.usingTerminal(_.getWidth)
+  def getTerminalWidth: Int = sbt.internal.util.JLine.usingTerminal { term ⇒
+    if (!term.isSupported) Int.MaxValue else term.getWidth
+  }
 
   def inTask[T](t: Scoped, i: Initialize[T]): Initialize[T] = _root_.sbt.inTask(t, i)
 }
